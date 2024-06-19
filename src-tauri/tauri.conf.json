@@ -1,0 +1,36 @@
+{
+    "build": {
+        "beforeDevCommand": "trunk serve",
+        "beforeBuildCommand": "trunk build",
+        "devPath": "http://127.0.0.1:10270",
+        "distDir": "../dist",
+        "withGlobalTauri": true
+    },
+    "tauri": {
+        "allowlist": {
+            "all": false,
+            "shell": {
+                "all": false,
+                "open": true
+            }
+        },
+        "windows": [
+            {
+                "title": "demo-app",
+                "width": 800,
+                "height": 600
+            }
+        ],
+        "security": {
+            "csp": null
+        },
+        "bundle": {
+            "active": true,
+            "targets": "all",
+            "identifier": "com.zhangxichang.demo",
+            "icon": [
+                "./icons/icon.ico"
+            ]
+        }
+    }
+}
