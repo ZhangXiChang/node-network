@@ -29,7 +29,7 @@
             "targets": "all",
             "identifier": "com.zhangxichang.demo",
             "icon": [
-                "./icons/icon.ico"
+                "./icon.ico"
             ]
         }
     }
