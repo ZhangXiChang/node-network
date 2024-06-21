@@ -8,25 +8,22 @@
     },
     "tauri": {
         "allowlist": {
-            "all": false,
-            "shell": {
-                "all": false,
-                "open": true
+            "window": {
+                "startDragging": true,
+                "maximize": true,
+                "unmaximize": true
             }
         },
         "windows": [
             {
-                "title": "demo-app",
-                "width": 800,
-                "height": 600
+                "title": "标题",
+                "width": 1050,
+                "height": 750,
+                "decorations": false,
+                "transparent": true
             }
         ],
-        "security": {
-            "csp": null
-        },
         "bundle": {
-            "active": true,
-            "targets": "all",
             "identifier": "com.zhangxichang.demo",
             "icon": [
                 "./icon.ico"

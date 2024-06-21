@@ -11,9 +11,30 @@ impl yew::Component for App {
         Self {}
     }
     fn view(&self, _ctx: &Context<Self>) -> Html {
+        let minimize_window = |_| {
+            invoke::minimize_window();
+        };
+        let maximize_window = |_| {
+            invoke::maximize_window();
+        };
+        let close_window = |_| {
+            invoke::close_window();
+        };
         html!(
             <>
-            <button class="bubbly-button">{"点我吧！"}</button>
+            <div class="titlebar" data-tauri-drag-region="">
+                <div class="titlebar-button" onclick={minimize_window}>
+                    <img src="https://api.iconify.design/mdi:window-minimize.svg"/>
+                </div>
+                <div
+                class="titlebar-button" onclick={maximize_window}>
+                    <img src="https://api.iconify.design/mdi:window-maximize.svg"/>
+                </div>
+                <div class="titlebar-button" onclick={close_window}>
+                    <img src="https://api.iconify.design/mdi:close.svg"/>
+                </div>
+            </div>
+            <canvas id="canvas"></canvas>
             </>
         )
     }
@@ -21,7 +42,7 @@ impl yew::Component for App {
         if first_render {
             match js_sys::eval(include_str!("../script.js")) {
                 Ok(_) => (),
-                Err(_) => invoke::exit(),
+                Err(_) => invoke::close_window(),
             }
         }
     }
