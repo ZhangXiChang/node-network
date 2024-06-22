@@ -24,3 +24,10 @@ pub fn maximize_window() {
         invoke("maximize_window", JsValue::null()).await;
     });
 }
+
+pub async fn window_is_maximized() -> bool {
+    invoke("window_is_maximized", JsValue::null())
+        .await
+        .as_bool()
+        .unwrap()
+}

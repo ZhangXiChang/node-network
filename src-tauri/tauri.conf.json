@@ -9,13 +9,12 @@
     "tauri": {
         "allowlist": {
             "window": {
-                "startDragging": true,
-                "maximize": true,
-                "unmaximize": true
+                "startDragging": true
             }
         },
         "windows": [
             {
+                "label": "main",
                 "title": "标题",
                 "width": 1050,
                 "height": 750,

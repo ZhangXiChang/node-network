@@ -1,8 +1,9 @@
-mod app;
 mod invoke;
+mod menubar;
+mod root;
 
-use app::App;
+use root::Root;
 
 fn main() {
-    yew::Renderer::<App>::new().render();
+    yew::Renderer::<Root>::new().render();
 }
