@@ -4,9 +4,10 @@ use crate::menubar::Menubar;
 
 #[function_component]
 pub fn Root() -> Html {
-    let window_maximize_icon_path =
-        use_state(|| "https://api.iconify.design/mdi:window-maximize.svg".to_string());
+    let maximize_window_icon = use_state(|| {
+        Html::from_html_unchecked(include_str!("../assets/window-maximize.svg").into())
+    });
     html!(<div class="window">
-        <Menubar {window_maximize_icon_path}/>
+        <Menubar {maximize_window_icon}/>
     </div>)
 }

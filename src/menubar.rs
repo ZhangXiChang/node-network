@@ -1,11 +1,11 @@
 use wasm_bindgen_futures::spawn_local;
-use yew::prelude::*;
+use yew::{prelude::*, virtual_dom::VNode};
 
 use crate::invoke;
 
 #[derive(Properties, PartialEq)]
 pub struct MenubarProperties {
-    pub window_maximize_icon_path: UseStateHandle<String>,
+    pub maximize_window_icon: UseStateHandle<VNode>,
 }
 pub struct Menubar;
 impl Component for Menubar {
@@ -20,20 +20,20 @@ impl Component for Menubar {
             invoke::minimize_window();
         };
         let maximize_window = {
-            let window_maximize_icon_path = ctx.props().window_maximize_icon_path.clone();
+            let maximize_window_icon = ctx.props().maximize_window_icon.clone();
             move |_| {
                 invoke::maximize_window();
                 spawn_local({
-                    let window_maximize_icon_path = window_maximize_icon_path.clone();
+                    let maximize_window_icon = maximize_window_icon.clone();
                     async move {
                         if invoke::window_is_maximized().await {
-                            window_maximize_icon_path.set(
-                                "https://api.iconify.design/mdi:window-restore.svg".to_string(),
-                            );
+                            maximize_window_icon.set(Html::from_html_unchecked(
+                                include_str!("../assets/window-restore.svg").into(),
+                            ));
                         } else {
-                            window_maximize_icon_path.set(
-                                "https://api.iconify.design/mdi:window-maximize.svg".to_string(),
-                            );
+                            maximize_window_icon.set(Html::from_html_unchecked(
+                                include_str!("../assets/window-maximize.svg").into(),
+                            ));
                         }
                     }
                 });
@@ -46,13 +46,13 @@ impl Component for Menubar {
             <>
             <div class="menubar" data-tauri-drag-region="">
                 <div class="button" onclick={minimize_window}>
-                    <img src={"https://api.iconify.design/mdi:window-minimize.svg"} />
+                    {Html::from_html_unchecked(include_str!("../assets/window-minimize.svg").into())}
                 </div>
                 <div class="button" onclick={maximize_window}>
-                    <img src={(*ctx.props().window_maximize_icon_path).clone()} />
+                    {(*ctx.props().maximize_window_icon).clone()}
                 </div>
                 <div class="button" id="button-close" onclick={close_window}>
-                    <img src={"https://api.iconify.design/mdi:close.svg"} />
+                    {Html::from_html_unchecked(include_str!("../assets/window-close.svg").into())}
                 </div>
             </div>
             </>
