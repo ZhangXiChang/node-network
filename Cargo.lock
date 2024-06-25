@@ -2211,31 +2211,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b15813163c1d831bf4a13c3610c05c0d03b39feb07f7e09fa234dac9b15aaf39"
 
 [[package]]
-name = "palo"
-version = "0.1.0"
-dependencies = [
- "js-sys",
- "serde",
- "serde-wasm-bindgen 0.6.5",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "yew",
-]
-
-[[package]]
-name = "palo-app"
-version = "0.0.0"
-dependencies = [
- "eyre",
- "opener",
- "serde",
- "serde_json",
- "tauri",
- "tauri-build",
- "window-shadows",
-]
-
-[[package]]
 name = "pango"
 version = "0.15.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2281,6 +2256,31 @@ dependencies = [
  "redox_syscall 0.5.2",
  "smallvec",
  "windows-targets 0.52.5",
+]
+
+[[package]]
+name = "pelo"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
+ "serde",
+ "serde-wasm-bindgen 0.6.5",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "yew",
+]
+
+[[package]]
+name = "pelo-app"
+version = "0.0.0"
+dependencies = [
+ "eyre",
+ "opener",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "window-shadows",
 ]
 
 [[package]]
