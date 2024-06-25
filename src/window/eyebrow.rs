@@ -45,7 +45,7 @@ impl Component for Eyebrow {
             invoke::close_window();
         };
         let github_link = |_| {
-            invoke::open("https://github.com/ZhangXiChang");
+            invoke::open("https://github.com/ZhangXiChang/pelo");
         };
         let setting_button = |_| {};
         html!(
