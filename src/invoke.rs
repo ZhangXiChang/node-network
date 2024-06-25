@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+use serde_wasm_bindgen::to_value;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::spawn_local;
 
@@ -9,25 +11,36 @@ extern "C" {
 
 pub fn close_window() {
     spawn_local(async {
-        invoke("close_window", JsValue::null()).await;
+        invoke("close_window", JsValue::NULL).await;
     });
 }
 
 pub fn minimize_window() {
     spawn_local(async {
-        invoke("minimize_window", JsValue::null()).await;
+        invoke("minimize_window", JsValue::NULL).await;
     });
 }
 
 pub fn maximize_window() {
     spawn_local(async {
-        invoke("maximize_window", JsValue::null()).await;
+        invoke("maximize_window", JsValue::NULL).await;
     });
 }
 
 pub async fn window_is_maximized() -> bool {
-    invoke("window_is_maximized", JsValue::null())
+    invoke("window_is_maximized", JsValue::NULL)
         .await
         .as_bool()
         .unwrap()
+}
+
+#[derive(Serialize, Deserialize)]
+struct OpenArg {
+    path: String,
+}
+pub fn open(path: &str) {
+    let path = path.to_string();
+    spawn_local(async move {
+        invoke("open", to_value(&OpenArg { path }).unwrap()).await;
+    });
 }

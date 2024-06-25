@@ -19,13 +19,14 @@
                 "width": 1050,
                 "height": 750,
                 "decorations": false,
-                "transparent": true
+                "transparent": true,
+                "center": true
             }
         ],
         "bundle": {
             "identifier": "com.zhangxichang.demo",
             "icon": [
-                "./icon.ico"
+                "../assets/logo.ico"
             ]
         }
     }

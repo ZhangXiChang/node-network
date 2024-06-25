@@ -1,6 +1,6 @@
 mod invoke;
-mod menubar;
 mod root;
+mod window;
 
 use root::Root;
 

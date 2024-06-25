@@ -14,7 +14,8 @@ fn main() -> Result<(), tauri::Error> {
             close_window,
             minimize_window,
             maximize_window,
-            window_is_maximized
+            window_is_maximized,
+            open
         ])
         .run(tauri::generate_context!())
 }
@@ -23,10 +24,12 @@ fn main() -> Result<(), tauri::Error> {
 fn close_window(window: tauri::Window) {
     window.close().unwrap()
 }
+
 #[tauri::command]
 fn minimize_window(window: tauri::Window) {
     window.minimize().unwrap()
 }
+
 #[tauri::command]
 fn maximize_window(window: tauri::Window) {
     if window.is_maximized().unwrap() {
@@ -35,7 +38,13 @@ fn maximize_window(window: tauri::Window) {
         window.maximize().unwrap()
     }
 }
+
 #[tauri::command]
 fn window_is_maximized(window: tauri::Window) -> bool {
     window.is_maximized().unwrap()
+}
+
+#[tauri::command]
+fn open(path: String) {
+    let _ = opener::open(path);
 }
