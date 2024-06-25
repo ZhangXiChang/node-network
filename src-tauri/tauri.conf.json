@@ -15,7 +15,7 @@
         "windows": [
             {
                 "label": "main",
-                "title": "标题",
+                "title": "牌佬助手",
                 "width": 1050,
                 "height": 750,
                 "decorations": false,
