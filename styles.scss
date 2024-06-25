@@ -21,6 +21,7 @@ p {
     border-radius: $window-border-radius;
 
     %Highlighted {
+        background: rgb(245, 245, 245);
         border-radius: 5px;
         box-shadow: 0px 0px 10px gray;
     }
@@ -93,5 +94,17 @@ p {
                 }
             }
         }
+    }
+
+    .Face {
+        height: 100%;
+
+        display: flex;
+    }
+
+    .Jaw {
+        height: 20px;
+
+        display: flex;
     }
 }
