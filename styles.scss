@@ -21,15 +21,13 @@ p {
     border-radius: $window-border-radius;
 
     %Highlighted {
-        background: rgb(245, 245, 245);
+        background: rgb(220, 220, 220);
         border-radius: 5px;
         box-shadow: 0px 0px 10px gray;
     }
 
     .Eyebrow {
-        $eyebrow-height: 40px;
-
-        height: $eyebrow-height;
+        height: 40px;
 
         display: flex;
 
@@ -37,16 +35,16 @@ p {
         border-top-right-radius: $window-border-radius;
 
         .MenuBar {
-            width: 100%;
-
             display: flex;
+            justify-content: center;
+            align-items: center;
+
+            margin-left: 5px;
 
             .GithubLogo {
                 display: flex;
-                justify-content: center;
-                align-items: center;
 
-                margin: calc(($eyebrow-height - 24px) / 2);
+                margin: 5px;
 
                 :hover {
                     @extend %Highlighted;
@@ -55,39 +53,38 @@ p {
 
             .SettingButton {
                 display: flex;
-                justify-content: center;
-                align-items: center;
 
-                margin: calc(($eyebrow-height - 24px) / 2);
+                margin: 5px;
 
                 :hover {
                     @extend %Highlighted;
                 }
             }
+        }
 
-            .Title {
-                width: 100%;
+        .Title {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
 
-                display: flex;
-                justify-content: center;
-                align-items: center;
-
-                p {
-                    font-weight: bold;
-                    text-shadow: 0px 0px 10px gray;
-                }
+            p {
+                font-weight: bold;
+                text-shadow: 0px 0px 10px gray;
             }
         }
 
         .ControlBar {
             display: flex;
+            justify-content: center;
+            align-items: center;
+
+            margin-right: 5px;
 
             .Button {
                 display: flex;
-                justify-content: center;
-                align-items: center;
 
-                margin: calc(($eyebrow-height - 16px) / 2);
+                margin: 5px;
 
                 :hover {
                     @extend %Highlighted;
@@ -97,14 +94,39 @@ p {
     }
 
     .Face {
-        height: 100%;
-
+        flex: 1;
         display: flex;
+
+        .FunMenu {
+            width: 100px;
+
+            display: flex;
+            flex-direction: column;
+
+            background: rgb(220, 220, 220);
+
+            .Button {
+
+                :hover {
+                    @extend %Highlighted;
+                }
+
+                p {
+                    font-weight: bold;
+                }
+            }
+        }
+
+        .FunUI {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+
+            background: rgb(230, 230, 230);
+        }
     }
 
     .Jaw {
         height: 20px;
-
-        display: flex;
     }
 }

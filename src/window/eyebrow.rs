@@ -48,7 +48,7 @@ impl Component for Eyebrow {
             invoke::open("https://github.com/ZhangXiChang/pelo");
         };
         let setting_button = |_| {};
-        html!(<div class="Eyebrow" data-tauri-drag-region="">
+        html!(<div class="Eyebrow">
             <div class="MenuBar" data-tauri-drag-region="">
                 <div class="GithubLogo" onclick={github_link}>
                     {Html::from_html_unchecked(include_str!("../../assets/window/eyebrow/github-loop.svg").into())}
@@ -56,9 +56,9 @@ impl Component for Eyebrow {
                 <div class="SettingButton" onclick={setting_button}>
                     {Html::from_html_unchecked(include_str!("../../assets/window/eyebrow/setting.svg").into())}
                 </div>
-                <div class="Title" data-tauri-drag-region="">
-                    <p>{"牌佬助手"}</p>
-                </div>
+            </div>
+            <div class="Title" data-tauri-drag-region="">
+                <p>{"牌佬助手"}</p>
             </div>
             <div class="ControlBar" data-tauri-drag-region="">
                 <div class="Button" onclick={minimize_window}>
