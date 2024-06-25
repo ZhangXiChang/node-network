@@ -2,10 +2,6 @@ body {
     margin: 0;
 }
 
-p {
-    margin: 0;
-}
-
 .Window {
     $window-border-radius: 5px;
 
@@ -97,36 +93,14 @@ p {
         flex: 1;
         display: flex;
 
-        .FunMenu {
-            width: 100px;
-
-            display: flex;
-            flex-direction: column;
-
-            background: rgb(220, 220, 220);
-
-            .Button {
-
-                :hover {
-                    @extend %Highlighted;
-                }
-
-                p {
-                    font-weight: bold;
-                }
-            }
-        }
-
-        .FunUI {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-
-            background: rgb(230, 230, 230);
-        }
+        background: rgb(225, 225, 225);
     }
 
     .Jaw {
         height: 20px;
+
+        display: flex;
+
+        background: rgb(235, 235, 235);
     }
 }
