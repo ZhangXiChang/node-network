@@ -10,6 +10,7 @@ impl Component for Face {
     }
     fn view(&self, _ctx: &Context<Self>) -> Html {
         html!(<div class="Face">
+            <div class="Button"><p>{"按钮"}</p></div>
         </div>)
     }
 }

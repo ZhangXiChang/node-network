@@ -1,4 +1,4 @@
-body {
+* {
     margin: 0;
 }
 
@@ -12,15 +12,7 @@ body {
     display: flex;
     flex-direction: column;
 
-    background: rgb(235, 235, 235);
-
     border-radius: $window-border-radius;
-
-    %Highlighted {
-        background: rgb(220, 220, 220);
-        border-radius: 5px;
-        box-shadow: 0px 0px 10px gray;
-    }
 
     .Eyebrow {
         height: 40px;
@@ -29,6 +21,13 @@ body {
 
         border-top-left-radius: $window-border-radius;
         border-top-right-radius: $window-border-radius;
+
+        background: rgb(235, 235, 235);
+
+        %Highlighted {
+            cursor: pointer;
+            background: rgb(220, 220, 220);
+        }
 
         .MenuBar {
             display: flex;
@@ -42,9 +41,11 @@ body {
 
                 margin: 5px;
 
-                :hover {
-                    @extend %Highlighted;
-                }
+                border-radius: 5px;
+            }
+
+            .GithubLogo:hover {
+                @extend %Highlighted;
             }
 
             .SettingButton {
@@ -52,9 +53,11 @@ body {
 
                 margin: 5px;
 
-                :hover {
-                    @extend %Highlighted;
-                }
+                border-radius: 5px;
+            }
+
+            .SettingButton:hover {
+                @extend %Highlighted;
             }
         }
 
@@ -65,6 +68,7 @@ body {
             align-items: center;
 
             p {
+                font-family: KaiTi;
                 font-weight: bold;
                 text-shadow: 0px 0px 10px gray;
             }
@@ -82,9 +86,11 @@ body {
 
                 margin: 5px;
 
-                :hover {
-                    @extend %Highlighted;
-                }
+                border-radius: 5px;
+            }
+
+            .Button:hover {
+                @extend %Highlighted;
             }
         }
     }
@@ -94,6 +100,31 @@ body {
         display: flex;
 
         background: rgb(225, 225, 225);
+
+        %Highlighted {
+            cursor: pointer;
+            background: rgb(210, 210, 210);
+        }
+
+        .Button {
+            width: 100px;
+            height: 50px;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            border-radius: 5px;
+
+            p {
+                font-weight: bold;
+                text-shadow: 0px 0px 10px gray;
+            }
+        }
+
+        .Button:hover {
+            @extend %Highlighted;
+        }
     }
 
     .Jaw {
@@ -102,5 +133,10 @@ body {
         display: flex;
 
         background: rgb(235, 235, 235);
+
+        %Highlighted {
+            cursor: pointer;
+            background: rgb(220, 220, 220);
+        }
     }
 }
