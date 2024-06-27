@@ -47,9 +47,11 @@ impl Component for Eyebrow {
         let github_link = |_| {
             invoke::open("https://github.com/ZhangXiChang/node-network");
         };
-        let setting_button = |_| {};
+        let setting_button = |_| {
+            gloo::console::info!("点击了设置按钮");
+        };
         html!(<div class="Eyebrow">
-            <div class="MenuBar" data-tauri-drag-region="">
+            <div class="MenuBar" data-tauri-drag-region="" ondblclick={maximize_window.clone()}>
                 <div class="GithubLogo" onclick={github_link}>
                     {Html::from_html_unchecked(include_str!("../../assets/window/eyebrow/github-loop.svg").into())}
                 </div>
@@ -57,14 +59,14 @@ impl Component for Eyebrow {
                     {Html::from_html_unchecked(include_str!("../../assets/window/eyebrow/setting.svg").into())}
                 </div>
             </div>
-            <div class="Title" data-tauri-drag-region="">
+            <div class="Title" data-tauri-drag-region="" ondblclick={maximize_window.clone()}>
                 <label class="Text">{"节点网络"}</label>
             </div>
-            <div class="ControlBar" data-tauri-drag-region="">
+            <div class="ControlBar" data-tauri-drag-region="" ondblclick={maximize_window.clone()}>
                 <div class="Button" onclick={minimize_window}>
                     {Html::from_html_unchecked(include_str!("../../assets/window/eyebrow/window-minimize.svg").into())}
                 </div>
-                <div class="Button" onclick={maximize_window}>
+                <div class="Button" onclick={maximize_window.clone()}>
                     {(*ctx.props().maximize_window_icon).clone()}
                 </div>
                 <div class="Button" onclick={close_window}>

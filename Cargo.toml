@@ -1,5 +1,5 @@
 [workspace]
-members = ["./web", "./web/tauri-app"]
+members = ["./web", "./web/app"]
 package.version = "0.1.0"
 package.edition = "2021"
 

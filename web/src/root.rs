@@ -1,6 +1,10 @@
 use yew::prelude::*;
 
-use crate::window::{eyebrow::EyebrowProperties, Window};
+use crate::window::{
+    eyebrow::EyebrowProperties,
+    face::{landing::Landing, FaceProperties},
+    Window,
+};
 
 #[function_component]
 pub fn Root() -> Html {
@@ -11,5 +15,8 @@ pub fn Root() -> Html {
             )
         }),
     };
-    html!(<Window {menubar_properties}/>)
+    let face_properties = FaceProperties {
+        face_content: use_state(|| html!(<Landing/>)),
+    };
+    html!(<Window {menubar_properties}{face_properties}/>)
 }

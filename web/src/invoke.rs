@@ -44,3 +44,7 @@ pub fn open(path: &str) {
         invoke("open", to_value(&OpenArg { path }).unwrap()).await;
     });
 }
+
+pub async fn connect_server() {
+    //invoke("window_is_maximized", JsValue::NULL).await;
+}
