@@ -9,8 +9,11 @@ impl Component for Face {
         Self
     }
     fn view(&self, _ctx: &Context<Self>) -> Html {
+        let face_content = html!(<div class="Landing">
+            {Html::from_html_unchecked(include_str!("../../assets/window/face/landing.svg").into())}
+        </div>);
         html!(<div class="Face">
-            <div class="Button"><p>{"按钮"}</p></div>
+            {face_content}
         </div>)
     }
 }

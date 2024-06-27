@@ -21,9 +21,9 @@ pub fn minimize_window() {
     });
 }
 
-pub fn maximize_window() {
+pub fn maximize_or_unmaximize_window() {
     spawn_local(async {
-        invoke("maximize_window", JsValue::NULL).await;
+        invoke("maximize_or_unmaximize_window", JsValue::NULL).await;
     });
 }
 

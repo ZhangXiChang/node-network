@@ -2,6 +2,10 @@
     margin: 0;
 }
 
+label {
+    pointer-events: none;
+}
+
 .Window {
     $window-border-radius: 5px;
 
@@ -24,6 +28,8 @@
 
         background: rgb(235, 235, 235);
 
+        padding-inline: 5px;
+
         %Highlighted {
             cursor: pointer;
             background: rgb(220, 220, 220);
@@ -34,12 +40,10 @@
             justify-content: center;
             align-items: center;
 
-            margin-left: 5px;
-
             .GithubLogo {
                 display: flex;
 
-                margin: 5px;
+                margin-inline: 5px;
 
                 border-radius: 5px;
             }
@@ -51,7 +55,7 @@
             .SettingButton {
                 display: flex;
 
-                margin: 5px;
+                margin-inline: 5px;
 
                 border-radius: 5px;
             }
@@ -67,7 +71,7 @@
             justify-content: center;
             align-items: center;
 
-            p {
+            .Text {
                 font-family: KaiTi;
                 font-weight: bold;
                 text-shadow: 0px 0px 10px gray;
@@ -79,12 +83,10 @@
             justify-content: center;
             align-items: center;
 
-            margin-right: 5px;
-
             .Button {
                 display: flex;
 
-                margin: 5px;
+                margin-inline: 5px;
 
                 border-radius: 5px;
             }
@@ -106,24 +108,11 @@
             background: rgb(210, 210, 210);
         }
 
-        .Button {
-            width: 100px;
-            height: 50px;
-
+        .Landing {
+            flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
-
-            border-radius: 5px;
-
-            p {
-                font-weight: bold;
-                text-shadow: 0px 0px 10px gray;
-            }
-        }
-
-        .Button:hover {
-            @extend %Highlighted;
         }
     }
 

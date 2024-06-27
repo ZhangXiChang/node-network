@@ -13,7 +13,7 @@ fn main() -> Result<(), tauri::Error> {
         .invoke_handler(tauri::generate_handler![
             close_window,
             minimize_window,
-            maximize_window,
+            maximize_or_unmaximize_window,
             window_is_maximized,
             open
         ])
@@ -31,7 +31,7 @@ fn minimize_window(window: tauri::Window) {
 }
 
 #[tauri::command]
-fn maximize_window(window: tauri::Window) {
+fn maximize_or_unmaximize_window(window: tauri::Window) {
     if window.is_maximized().unwrap() {
         window.unmaximize().unwrap()
     } else {

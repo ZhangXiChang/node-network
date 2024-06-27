@@ -22,7 +22,7 @@ impl Component for Eyebrow {
         let maximize_window = {
             let maximize_window_icon = ctx.props().maximize_window_icon.clone();
             move |_| {
-                invoke::maximize_window();
+                invoke::maximize_or_unmaximize_window();
                 spawn_local({
                     let maximize_window_icon = maximize_window_icon.clone();
                     async move {
@@ -45,7 +45,7 @@ impl Component for Eyebrow {
             invoke::close_window();
         };
         let github_link = |_| {
-            invoke::open("https://github.com/ZhangXiChang/pelo");
+            invoke::open("https://github.com/ZhangXiChang/node-network");
         };
         let setting_button = |_| {};
         html!(<div class="Eyebrow">
@@ -58,7 +58,7 @@ impl Component for Eyebrow {
                 </div>
             </div>
             <div class="Title" data-tauri-drag-region="">
-                <p>{"牌佬助手"}</p>
+                <label class="Text">{"节点网络"}</label>
             </div>
             <div class="ControlBar" data-tauri-drag-region="">
                 <div class="Button" onclick={minimize_window}>

@@ -2,20 +2,15 @@
     "build": {
         "beforeDevCommand": "trunk serve",
         "beforeBuildCommand": "trunk build",
-        "devPath": "http://127.0.0.1:10270",
-        "distDir": "../dist",
+        "devPath": "http://127.0.0.1:10279",
+        "distDir": "../../dist",
         "withGlobalTauri": true
     },
     "tauri": {
-        "allowlist": {
-            "window": {
-                "startDragging": true
-            }
-        },
         "windows": [
             {
                 "label": "main",
-                "title": "牌佬助手",
+                "title": "节点网络",
                 "width": 1050,
                 "height": 750,
                 "decorations": false,
@@ -24,10 +19,15 @@
             }
         ],
         "bundle": {
-            "identifier": "com.zhangxichang.demo",
+            "identifier": "com.zhangxichang.node-network",
             "icon": [
-                "../assets/logo.ico"
+                "./logo.ico"
             ]
+        },
+        "allowlist": {
+            "window": {
+                "startDragging": true
+            }
         }
     }
 }
