@@ -21,7 +21,7 @@
         "bundle": {
             "identifier": "com.zhangxichang.node-network",
             "icon": [
-                "./logo.ico"
+                "../../logo.ico"
             ]
         },
         "allowlist": {
