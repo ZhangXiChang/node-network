@@ -1,10 +1,9 @@
 {
     "build": {
-        "beforeDevCommand": "trunk serve",
-        "beforeBuildCommand": "trunk build",
+        "beforeDevCommand": "npm run dev",
+        "beforeBuildCommand": "npm run build",
         "devPath": "http://127.0.0.1:10279",
-        "distDir": "../../dist",
-        "withGlobalTauri": true
+        "distDir": "../dist"
     },
     "tauri": {
         "windows": [
@@ -21,12 +20,16 @@
         "bundle": {
             "identifier": "com.zhangxichang.node-network",
             "icon": [
-                "../../logo.ico"
+                "../logo.ico"
             ]
         },
         "allowlist": {
             "window": {
-                "startDragging": true
+                "startDragging": true,
+                "minimize": true,
+                "maximize": true,
+                "close": true,
+                "unmaximize": true
             }
         }
     }

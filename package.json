@@ -1,0 +1,21 @@
+{
+    "type": "module",
+    "scripts": {
+        "start": "vite",
+        "dev": "vite",
+        "build": "vite build",
+        "serve": "vite preview",
+        "tauri": "tauri"
+    },
+    "dependencies": {
+        "@tauri-apps/api": "^1.5.6",
+        "solid-js": "^1.8.17"
+    },
+    "devDependencies": {
+        "@tauri-apps/cli": "^1.5.14",
+        "sass": "^1.77.6",
+        "typescript": "^5.5.2",
+        "vite": "^5.3.2",
+        "vite-plugin-solid": "^2.10.2"
+    }
+}

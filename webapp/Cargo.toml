@@ -1,0 +1,24 @@
+[package]
+name = "webapp"
+edition.workspace = true
+version.workspace = true
+
+[build-dependencies]
+tauri-build = { version = "1.5.2", features = [] } #Tauri构建脚本
+
+[features]
+custom-protocol = ["tauri/custom-protocol"] #在生产环境不要删除
+
+[dependencies]
+node-network = { path = "../" }
+
+tauri = { version = "1.6.8", features = [
+    "window-minimize",
+    "window-maximize",
+    "window-close",
+    "window-start-dragging",
+    "window-unmaximize",
+] } #Web窗口
+window-shadows = "0.2.2" #Tauri窗口阴影，在2.0之前仍然需要
+
+opener = "0.7.1" #使用系统默认方式打开

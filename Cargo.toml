@@ -1,5 +1,5 @@
 [workspace]
-members = ["./web", "./web/app"]
+members = ["./webapp"]
 package.version = "0.1.0"
 package.edition = "2021"
 
