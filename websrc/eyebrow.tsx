@@ -4,20 +4,20 @@ import { createSignal } from "solid-js";
 
 export default function Eyebrow() {
     const [window_maximize_button_ico_path, set_window_maximize_button_ico_path] = createSignal("./window/eyebrow/window-maximize.svg");
-    return (<div class="Eyebrow">
-        <div class="Bar" data-tauri-drag-region>
-            <div class="Button" onclick={() => invoke("open", { path: "https://github.com/ZhangXiChang/node-network" })}>
+    return (<div class="h-10 flex px-1">
+        <div class="flex justify-center items-center" data-tauri-drag-region>
+            <div class="flex rounded mx-1 hover:cursor-pointer hover:bg-gray-300" onclick={() => invoke("open", { path: "https://github.com/ZhangXiChang/node-network" })}>
                 <img src="./window/eyebrow/github-loop.svg" />
             </div>
         </div>
-        <div class="Bar TitleBar" data-tauri-drag-region>
-            <label>节点网络</label>
+        <div class="flex justify-center items-center flex-1" data-tauri-drag-region>
+            <label class="title-text-shadow font-sans font-bold" id="title-text">节点网络</label>
         </div>
-        <div class="Bar" data-tauri-drag-region>
-            <div class="Button" onclick={() => appWindow.minimize()}>
+        <div class="flex justify-center items-center" data-tauri-drag-region>
+            <div class="flex rounded mx-1 hover:cursor-pointer hover:bg-gray-300" onclick={() => appWindow.minimize()}>
                 <img src="./window/eyebrow/window-minimize.svg" />
             </div>
-            <div class="Button" onclick={async () => {
+            <div class="flex rounded mx-1 hover:cursor-pointer hover:bg-gray-300" onclick={async () => {
                 await appWindow.toggleMaximize();
                 if (await appWindow.isMaximized()) {
                     set_window_maximize_button_ico_path("./window/eyebrow/window-restore.svg");
@@ -27,7 +27,7 @@ export default function Eyebrow() {
             }}>
                 <img src={window_maximize_button_ico_path()} />
             </div>
-            <div class="Button" onclick={() => appWindow.close()}>
+            <div class="flex rounded mx-1 hover:cursor-pointer hover:bg-gray-300" onclick={() => appWindow.close()}>
                 <img src="./window/eyebrow/window-close.svg" />
             </div>
         </div>

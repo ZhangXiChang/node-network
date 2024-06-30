@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+    user-select: none;
+}
+
+label {
+    pointer-events: none;
+}
+
+#title-text {
+    text-shadow: 0px 0px 10px gray;
+}
