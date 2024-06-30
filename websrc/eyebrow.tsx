@@ -6,7 +6,7 @@ export default function Eyebrow() {
     const [window_maximize_button_ico_path, set_window_maximize_button_ico_path] = createSignal("./window/eyebrow/window-maximize.svg");
     return (<div class="Eyebrow">
         <div class="MenuBar" data-tauri-drag-region>
-            <div class="GithubLogo" onclick={async () => await invoke("open", { path: "https://github.com/ZhangXiChang/node-network" })}>
+            <div class="GithubLogo" onclick={() => invoke("open", { path: "https://github.com/ZhangXiChang/node-network" })}>
                 <img src="./window/eyebrow/github-loop.svg" />
             </div>
             <div class="SettingButton">
@@ -14,10 +14,10 @@ export default function Eyebrow() {
             </div>
         </div>
         <div class="Title" data-tauri-drag-region>
-            <label class="Text">节点网络</label>
+            <label>节点网络</label>
         </div>
         <div class="ControlBar" data-tauri-drag-region>
-            <div class="Button" onclick={async () => await appWindow.minimize()}>
+            <div class="Button" onclick={() => appWindow.minimize()}>
                 <img src="./window/eyebrow/window-minimize.svg" />
             </div>
             <div class="Button" onclick={async () => {
@@ -30,9 +30,9 @@ export default function Eyebrow() {
             }}>
                 <img src={window_maximize_button_ico_path()} />
             </div>
-            <div class="Button" onclick={async () => await appWindow.close()}>
+            <div class="Button" onclick={() => appWindow.close()}>
                 <img src="./window/eyebrow/window-close.svg" />
             </div>
         </div>
-    </div>)
+    </div>);
 };

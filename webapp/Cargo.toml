@@ -12,6 +12,8 @@ custom-protocol = ["tauri/custom-protocol"] #在生产环境不要删除
 [dependencies]
 node-network = { path = "../" }
 
+tokio = { version = "1.38.0", features = ["full"] }
+
 tauri = { version = "1.6.8", features = [
     "window-minimize",
     "window-maximize",

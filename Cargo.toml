@@ -9,6 +9,8 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
+eyre = "0.6.12"
+
 quinn = { version = "0.11.2", features = ["ring"] } #QUIC协议
 rustls = "0.23.10"                                  #TLS加密
 rcgen = "0.13.1"                                    #自签名X.509证书生成
