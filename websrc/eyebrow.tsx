@@ -7,7 +7,7 @@ export default function Eyebrow() {
     return (<div class="h-10 flex px-1">
         <div class="flex justify-center items-center" data-tauri-drag-region>
             <div class="flex rounded mx-1 hover:cursor-pointer hover:bg-gray-300" onclick={() => invoke("open", { path: "https://github.com/ZhangXiChang/node-network" })}>
-                <img src="./window/eyebrow/github-loop.svg" />
+                <img src="./window/eyebrow/logo.svg" />
             </div>
         </div>
         <div class="flex justify-center items-center flex-1" data-tauri-drag-region>
