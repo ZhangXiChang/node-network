@@ -3,32 +3,32 @@ import { appWindow } from "@tauri-apps/api/window";
 import { createSignal } from "solid-js";
 
 export default function Eyebrow() {
-    const [window_maximize_button_ico_path, set_window_maximize_button_ico_path] = createSignal("./window/eyebrow/window-maximize.svg");
-    return (<div class="h-10 flex px-1">
+    const [window_toggleMaximize_button_ico, set_window_toggleMaximize_button_ico] = createSignal(<div class="i-mdi:window-maximize w-16px h-16px"></div>);
+    return (<div class="h-10 bg-gray-1 flex px-1">
         <div class="flex justify-center items-center" data-tauri-drag-region>
-            <div class="flex rounded mx-1 hover:cursor-pointer hover:bg-gray-300" onclick={() => invoke("open", { path: "https://github.com/ZhangXiChang/node-network" })}>
-                <img src="./window/eyebrow/logo.svg" />
+            <div class="flex mx-1 hover:cursor-pointer hover:bg-gray-3" onclick={() => invoke("open", { path: "https://github.com/ZhangXiChang/node-network" })}>
+                <div class="i-line-md:github-loop w-24px h-24px"></div>
             </div>
         </div>
-        <div class="flex justify-center items-center flex-1" data-tauri-drag-region>
-            <label class="title-text-shadow font-sans font-bold" id="title-text">节点网络</label>
+        <div class="flex-1 flex justify-center items-center" data-tauri-drag-region>
+            <label class="font-bold" id="title-text">节点网络</label>
         </div>
-        <div class="flex justify-center items-center" data-tauri-drag-region>
-            <div class="flex rounded mx-1 hover:cursor-pointer hover:bg-gray-300" onclick={() => appWindow.minimize()}>
-                <img src="./window/eyebrow/window-minimize.svg" />
+        <div class="flex justify-center items-center mr-1" data-tauri-drag-region>
+            <div class="flex mx-1 hover:cursor-pointer hover:bg-gray-3" onclick={() => appWindow.minimize()}>
+                <div class="i-mdi:window-minimize w-16px h-16px"></div>
             </div>
-            <div class="flex rounded mx-1 hover:cursor-pointer hover:bg-gray-300" onclick={async () => {
+            <div class="flex mx-1 hover:cursor-pointer hover:bg-gray-3" onclick={async () => {
                 await appWindow.toggleMaximize();
                 if (await appWindow.isMaximized()) {
-                    set_window_maximize_button_ico_path("./window/eyebrow/window-restore.svg");
+                    set_window_toggleMaximize_button_ico(<div class="i-mdi:window-restore w-16px h-16px"></div>);
                 } else {
-                    set_window_maximize_button_ico_path("./window/eyebrow/window-maximize.svg");
+                    set_window_toggleMaximize_button_ico(<div class="i-mdi:window-maximize w-16px h-16px"></div>);
                 }
             }}>
-                <img src={window_maximize_button_ico_path()} />
+                {window_toggleMaximize_button_ico()}
             </div>
-            <div class="flex rounded mx-1 hover:cursor-pointer hover:bg-gray-300" onclick={() => appWindow.close()}>
-                <img src="./window/eyebrow/window-close.svg" />
+            <div class="flex mx-1 hover:cursor-pointer hover:bg-gray-3" onclick={() => appWindow.close()}>
+                <div class="i-mdi:window-close w-16px h-16px"></div>
             </div>
         </div>
     </div>);

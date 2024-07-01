@@ -2,7 +2,7 @@ import Eyebrow from "./eyebrow";
 import Face from "./face/mod";
 
 export default function Window() {
-    return (<div class="absolute size-full flex flex-col rounded bg-gray-100">
+    return (<div class="flex-1 flex flex-col">
         <Eyebrow />
         <Face />
     </div>);
