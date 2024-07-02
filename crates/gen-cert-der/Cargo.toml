@@ -1,0 +1,11 @@
+[package]
+name = "gen-cert-der"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+eyre = "0.6.12"                                     #错误处理
+clap = { version = "4.5.8", features = ["derive"] } #命令行参数解析
+
+rcgen = "0.13.1"                                #自签名X.509证书生成
+uuid = { version = "1.9.1", features = ["v4"] } #通用唯一标识符

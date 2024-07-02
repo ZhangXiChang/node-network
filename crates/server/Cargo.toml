@@ -1,0 +1,18 @@
+[package]
+name = "server"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+eyre = "0.6.12"                                     #错误处理
+tokio = { version = "1.38.0", features = ["full"] } #异步运行时
+tracing = "0.1.40"                                  #日志生产者
+tracing-subscriber = "0.3.18"                       #日志消费者
+
+quinn = "0.11.2"                                           #QUIC协议
+rustls = { version = "0.23.10", default-features = false } #TLS加密
+
+serde = { version = "1.0.203", features = ["derive"] } #编解码特性
+rmp-serde = "1.3.0"                                    #MessagePack编解码
+
+sqlx = { version = "0.7.4", features = ["runtime-tokio", "tls-rustls"] } #数据库交互
