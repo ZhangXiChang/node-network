@@ -3,6 +3,7 @@ use std::{sync::Arc, time::Duration};
 use eyre::Result;
 use quinn::{Endpoint, ServerConfig, TransportConfig};
 use rustls::pki_types::PrivateKeyDer;
+use tool_code::lock::ArcMutex;
 use tracing_subscriber::fmt::SubscriberBuilder;
 
 const CERT_DER: &[u8] = include_bytes!("../../../target/server.cer");
@@ -27,16 +28,20 @@ async fn main() -> Result<()> {
     let endpoint = Endpoint::server(server_config, "0.0.0.0:10270".parse()?)?;
     tracing::info!("服务端初始化完成");
     //主循环
+    let connection_list = ArcMutex::new(Vec::new());
     loop {
         if let Some(incoming) = endpoint.accept().await {
-            if let Ok(connection) = incoming.await {
-                tokio::spawn({
-                    let connection = connection.clone();
-                    async move {
-                        tracing::info!("{}", connection.remote_address());
+            tokio::spawn({
+                let connection_list = connection_list.clone();
+                async move {
+                    let remote_address = incoming.remote_address();
+                    tracing::info!("[{}]接入连接", remote_address);
+                    match incoming.await {
+                        Ok(connection) => connection_list.lock().push(connection),
+                        Err(err) => tracing::info!("[{}]{}", remote_address, err),
                     }
-                });
-            }
+                }
+            });
         }
     }
 }

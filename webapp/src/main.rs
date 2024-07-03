@@ -21,23 +21,41 @@ async fn main() -> Result<()> {
             Ok(())
         })
         .manage(App::new()?)
-        .invoke_handler(tauri::generate_handler![open, connect_hubnode])
+        .invoke_handler(tauri::generate_handler![
+            open,
+            connect_hubnode,
+            get_user_star_hubnode_logo
+        ])
         .run(tauri::generate_context!())?;
     Ok(())
 }
 
 #[tauri::command]
-fn open(path: String) {
-    let _ = opener::open(path);
+async fn open(path: String) -> Result<(), String> {
+    async move {
+        opener::open(path)?;
+        eyre::Ok(())
+    }
+    .await
+    .map_err(|e| e.to_string())
 }
 
 #[tauri::command]
-async fn connect_hubnode<'a>(app: tauri::State<'a, App>) -> Result<(), ()> {
-    async {
+async fn connect_hubnode<'a>(app: tauri::State<'a, App>) -> Result<(), String> {
+    async move {
         app.connect_hubnode().await?;
         eyre::Ok(())
     }
     .await
-    .map_err(|_| ())?;
-    Ok(())
+    .map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+async fn get_user_star_hubnode_logo<'a>(app: tauri::State<'a, App>) -> Result<(), String> {
+    async move {
+        tracing::info!("获取用户收藏中枢节点图标");
+        eyre::Ok(())
+    }
+    .await
+    .map_err(|e| e.to_string())
 }

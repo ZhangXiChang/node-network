@@ -4,6 +4,8 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
+tool-code = { path = "../tool-code" }
+
 eyre = "0.6.12"                                     #错误处理
 tokio = { version = "1.38.0", features = ["full"] } #异步运行时
 tracing = "0.1.40"                                  #日志生产者

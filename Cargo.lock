@@ -3321,6 +3321,7 @@ dependencies = [
  "serde",
  "sqlx",
  "tokio",
+ "tool-code",
  "tracing",
  "tracing-subscriber",
 ]
