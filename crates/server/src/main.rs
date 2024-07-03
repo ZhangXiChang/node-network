@@ -4,7 +4,7 @@ use eyre::Result;
 use quinn::{Endpoint, ServerConfig, TransportConfig};
 use rustls::pki_types::PrivateKeyDer;
 use tool_code::lock::ArcMutex;
-use tracing_subscriber::fmt::SubscriberBuilder;
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 const CERT_DER: &[u8] = include_bytes!("../../../target/server.cer");
 const KEY_DER: &[u8] = include_bytes!("../../../target/server.key");
@@ -12,8 +12,12 @@ const KEY_DER: &[u8] = include_bytes!("../../../target/server.key");
 #[tokio::main]
 async fn main() -> Result<()> {
     //初始化日志系统
-    SubscriberBuilder::default()
-        .with_max_level(tracing::Level::INFO)
+    tracing_subscriber::registry()
+        .with(tracing_subscriber::fmt::layer())
+        .with(
+            tracing_subscriber::filter::Targets::new()
+                .with_targets(vec![("server", tracing::Level::INFO)]),
+        )
         .init();
     //初始化服务端
     let mut server_config = ServerConfig::with_single_cert(

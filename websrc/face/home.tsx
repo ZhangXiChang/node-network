@@ -2,8 +2,8 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { createSignal } from "solid-js";
 
 export default function Home() {
-    const [sidebar_hubnode_logo_button, set_sidebar_hubnode_logo_button] = createSignal(<></>);
-    invoke("get_user_star_hubnode_logo").then(() => { });
+    const [sidebar_hubnode_logo_button, _set_sidebar_hubnode_logo_button] = createSignal(<></>);
+    invoke("get_user_star_hubnode_logo").then(() => <></>);
     return (<>
         <div class="w-70px flex flex-col items-center">
             <div class="h-55px flex justify-center items-center">

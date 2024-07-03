@@ -3,14 +3,18 @@
 use eyre::{eyre, Result};
 use node_network::app::App;
 use tauri::Manager;
-use tracing_subscriber::fmt::SubscriberBuilder;
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use window_shadows::set_shadow;
 
 #[tokio::main]
 async fn main() -> Result<()> {
     //初始化日志系统
-    SubscriberBuilder::default()
-        .with_max_level(tracing::Level::INFO)
+    tracing_subscriber::registry()
+        .with(tracing_subscriber::fmt::layer())
+        .with(
+            tracing_subscriber::filter::Targets::new()
+                .with_targets(vec![("webapp", tracing::Level::INFO)]),
+        )
         .init();
     tauri::Builder::default()
         .setup(|app| {
@@ -50,7 +54,7 @@ async fn connect_hubnode<'a>(app: tauri::State<'a, App>) -> Result<(), String> {
 }
 
 #[tauri::command]
-async fn get_user_star_hubnode_logo<'a>(app: tauri::State<'a, App>) -> Result<(), String> {
+async fn get_user_star_hubnode_logo<'a>(_app: tauri::State<'a, App>) -> Result<(), String> {
     async move {
         tracing::info!("获取用户收藏中枢节点图标");
         eyre::Ok(())

@@ -8,7 +8,6 @@ use uuid::Uuid;
 
 const SERVER_CERT_DER: &[u8] = include_bytes!("../target/server.cer");
 
-#[derive(Clone)]
 pub struct App {
     endpoint: Endpoint,
     cert_der: Arc<Vec<u8>>,
@@ -37,6 +36,7 @@ impl App {
         })
     }
     pub async fn connect_hubnode(&self) -> Result<()> {
+        let _ = self.cert_der.clone(); //TODO
         *self.server_conn.lock() = Some({
             let server_name = x509_dns_name_from_cert_der(SERVER_CERT_DER)?;
             self.endpoint
