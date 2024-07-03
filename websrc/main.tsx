@@ -4,10 +4,6 @@ import "virtual:uno.css"
 import "./style.css"
 
 window.addEventListener("contextmenu", (e) => e.preventDefault());
-window.addEventListener("keydown", (e) => {
-    if (e.key != "F12") {
-        e.preventDefault();
-    }
-});
+window.addEventListener("keydown", (e) => e.key != "F12" ? e.preventDefault() : null);
 
 render(() => <Window />, document.body);

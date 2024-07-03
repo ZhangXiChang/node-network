@@ -1,9 +1,16 @@
 import { invoke } from "@tauri-apps/api/tauri";
-import { createSignal } from "solid-js";
+import { createRoot, createSignal } from "solid-js";
 
 export default function Home() {
-    const [sidebar_hubnode_logo_button, _set_sidebar_hubnode_logo_button] = createSignal(<></>);
-    invoke("get_user_star_hubnode_logo").then(() => <></>);
+    const [sidebarHubnodeLogoButton, setSidebarHubnodeLogoButton] = createSignal(<></>);
+    (async () => {
+        try {
+            await invoke("get_user_star_hubnode_logo");
+            createRoot(() => { setSidebarHubnodeLogoButton(<></>) });
+        } catch (err: any) {
+            createRoot(() => { setSidebarHubnodeLogoButton(<>{err}</>) });
+        }
+    })();
     return (<>
         <div class="w-70px flex flex-col items-center">
             <div class="h-55px flex justify-center items-center">
@@ -11,7 +18,7 @@ export default function Home() {
                     <div class="i-line-md:compass-loop w-48px h-48px"></div>
                 </div>
             </div>
-            {sidebar_hubnode_logo_button()}
+            {sidebarHubnodeLogoButton()}
         </div>
         <div class="w-220px px-10px rounded-lt-8px bg-gray-2 flex flex-col">
             <div class="h-55px pl-15px flex items-center">
