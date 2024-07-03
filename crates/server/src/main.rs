@@ -37,7 +37,10 @@ async fn main() -> Result<()> {
                     let remote_address = incoming.remote_address();
                     tracing::info!("[{}]接入连接", remote_address);
                     match incoming.await {
-                        Ok(connection) => connection_list.lock().push(connection),
+                        Ok(connection) => {
+                            connection_list.lock().push(connection.clone());
+                            tracing::info!("[{}]连接成功", connection.remote_address());
+                        }
                         Err(err) => tracing::info!("[{}]{}", remote_address, err),
                     }
                 }
