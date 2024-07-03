@@ -537,6 +537,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "config-builder"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "eyre",
+ "rcgen",
+ "uuid",
+]
+
+[[package]]
 name = "const-oid"
 version = "0.9.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1284,16 +1294,6 @@ dependencies = [
  "libc",
  "system-deps 6.2.2",
  "x11",
-]
-
-[[package]]
-name = "gen-cert-der"
-version = "0.1.0"
-dependencies = [
- "clap",
- "eyre",
- "rcgen",
- "uuid",
 ]
 
 [[package]]
@@ -4569,11 +4569,14 @@ checksum = "af190c94f2773fdb3729c55b007a722abb5384da03bc0986df4c289bf5567e96"
 name = "webapp"
 version = "0.1.0"
 dependencies = [
+ "eyre",
  "node-network",
  "opener",
  "tauri",
  "tauri-build",
  "tokio",
+ "tracing",
+ "tracing-subscriber",
  "window-shadows",
 ]
 

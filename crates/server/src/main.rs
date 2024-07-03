@@ -3,6 +3,7 @@ use std::{sync::Arc, time::Duration};
 use eyre::Result;
 use quinn::{Endpoint, ServerConfig, TransportConfig};
 use rustls::pki_types::PrivateKeyDer;
+use tracing_subscriber::fmt::SubscriberBuilder;
 
 const CERT_DER: &[u8] = include_bytes!("../../../target/server.cer");
 const KEY_DER: &[u8] = include_bytes!("../../../target/server.key");
@@ -10,7 +11,7 @@ const KEY_DER: &[u8] = include_bytes!("../../../target/server.key");
 #[tokio::main]
 async fn main() -> Result<()> {
     //初始化日志系统
-    tracing_subscriber::fmt()
+    SubscriberBuilder::default()
         .with_max_level(tracing::Level::INFO)
         .init();
     //初始化服务端

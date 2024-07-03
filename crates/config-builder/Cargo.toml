@@ -1,5 +1,5 @@
 [package]
-name = "gen-cert-der"
+name = "config-builder"
 version.workspace = true
 edition.workspace = true
 
