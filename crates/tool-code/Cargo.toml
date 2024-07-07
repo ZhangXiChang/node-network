@@ -1,0 +1,9 @@
+[package]
+name = "tool-code"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+eyre = "0.6.12" #错误处理
+
+x509-parser = "0.16.0" #X.509证书解码
