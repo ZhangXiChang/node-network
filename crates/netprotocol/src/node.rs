@@ -4,6 +4,7 @@ use eyre::{eyre, Result};
 use quinn::{ClientConfig, Connection, Endpoint, ServerConfig, TransportConfig};
 use rustls::{pki_types::PrivateKeyDer, RootCertStore};
 use serde::{Deserialize, Serialize};
+use tokio::task::JoinHandle;
 use tool_code::{lock::PointerPreNew, x509::x509_dns_name_from_cert_der};
 use uuid::Uuid;
 
@@ -41,6 +42,9 @@ impl PeerNode {
         send.finish()?;
         Ok(())
     }
+    pub fn remote_ip_address(&self) -> SocketAddr {
+        self.connection.remote_address()
+    }
 }
 
 #[derive(Clone)]
@@ -60,7 +64,7 @@ impl Node {
             (
                 ServerConfig::with_single_cert(
                     vec![(*cert_key.cert_der).clone().into()],
-                    PrivateKeyDer::Pkcs8(cert_key.key_der.into()),
+                    PrivateKeyDer::Pkcs8((*cert_key.key_der).clone().into()),
                 )?,
                 cert_key.cert_der,
             )
@@ -91,22 +95,25 @@ impl Node {
             peer_hubnode: PointerPreNew::new(),
         })
     }
-    pub async fn accept(&self) -> Result<PeerNode> {
-        let connection = self
-            .endpoint
-            .accept()
-            .await
-            .ok_or(eyre!("没有传入的连接"))?
-            .accept()?
-            .await?;
-        //发送自身节点信息并接收对方节点信息
-        let (mut send, mut recv) = connection.accept_bi().await?;
-        send.write_all(&rmp_serde::to_vec(&self.info)?).await?;
-        send.finish()?;
-        Ok(PeerNode::new(
-            connection,
-            rmp_serde::from_slice(&recv.read_to_end(usize::MAX).await?)?,
-        ))
+    pub async fn accept(&self) -> JoinHandle<Result<PeerNode>> {
+        let incoming_opt = self.endpoint.accept().await;
+        tokio::spawn({
+            let node_info = self.info.clone();
+            async move {
+                let connection = incoming_opt
+                    .ok_or(eyre!("没有传入的连接"))?
+                    .accept()?
+                    .await?;
+                //发送自身节点信息并接收对方节点信息
+                let (mut send, mut recv) = connection.accept_bi().await?;
+                send.write_all(&rmp_serde::to_vec(&node_info)?).await?;
+                send.finish()?;
+                Ok(PeerNode::new(
+                    connection,
+                    rmp_serde::from_slice(&recv.read_to_end(usize::MAX).await?)?,
+                ))
+            }
+        })
     }
     pub async fn connect(
         &self,

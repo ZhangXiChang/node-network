@@ -39,7 +39,7 @@ impl<T> Container<T> {
             value: Pointer::new(Vec::new()),
         }
     }
-    pub fn push(&self, value: T) {
+    pub fn add(&self, value: T) {
         self.value.lock().push(value);
     }
     pub fn remove(&self, index: usize) {

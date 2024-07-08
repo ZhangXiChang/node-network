@@ -1,18 +1,16 @@
-use std::{sync::Arc, time::Duration};
+use std::sync::Arc;
 
 use eyre::Result;
-use netprotocol::{Packet, Verify};
-use quinn::{Endpoint, ServerConfig, TransportConfig};
-use rustls::pki_types::PrivateKeyDer;
+use netprotocol::{node::Node, tls::CertKey};
 use sqlx::{prelude::FromRow, SqlitePool};
-use tool_code::lock::ArcMutexVec;
+use tool_code::lock::Container;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 const CERT_DER: &[u8] = include_bytes!("../../../assets/server.cer");
 const KEY_DER: &[u8] = include_bytes!("../../../assets/server.key");
 
 #[derive(FromRow)]
-struct HubNodeInfo {
+struct HubNodeListRow {
     id: u32,
     name: String,
     ipv4_address: String,
@@ -31,59 +29,48 @@ async fn main() -> Result<()> {
                 .with_targets(vec![("server", tracing::Level::INFO)]),
         )
         .init();
+    tracing::info!("日志系统初始化完成");
     //初始化服务端
-    let mut server_config = ServerConfig::with_single_cert(
-        vec![CERT_DER.to_vec().into()],
-        PrivateKeyDer::Pkcs8(KEY_DER.to_vec().into()),
+    let node = Node::new(
+        "[::]:10270".parse()?,
+        "节点服务端",
+        "用于提供公共节点服务",
+        Some(CertKey {
+            cert_der: Arc::new(CERT_DER.to_vec()),
+            key_der: Arc::new(KEY_DER.to_vec()),
+        }),
     )?;
-    server_config.transport_config(Arc::new({
-        let mut a = TransportConfig::default();
-        a.keep_alive_interval(Some(Duration::from_secs(5)));
-        a
-    }));
-    let endpoint = Endpoint::server(server_config, "0.0.0.0:10270".parse()?)?;
-    tracing::info!("服务端初始化完成");
+    tracing::info!("节点服务端初始化完成");
     //初始化数据库连接池
     let db_conn_pool = SqlitePool::connect("./assets/server.db").await?;
     tracing::info!("数据库连接池初始化完成");
+    //连接列表
+    let conn_list = Container::new();
     //主循环
-    let connection_list = ArcMutexVec::new();
     loop {
-        if let Some(incoming) = endpoint.accept().await {
-            tokio::spawn({
-                let connection_list = connection_list.clone();
-                let _db_conn_pool = db_conn_pool.clone();
-                async move {
-                    tracing::info!("[{}]接入连接", incoming.remote_address());
-                    if let Ok(connection) = incoming.await {
-                        tracing::info!("[{}]连接成功", connection.remote_address());
-                        //验证
-                        let (mut send, mut recv) = connection.open_bi().await?;
-                        send.write_all(&rmp_serde::to_vec(&Packet::Verify(Verify::default()))?)
-                            .await?;
-                        send.finish()?;
-                        if let Packet::Verify(verify) =
-                            rmp_serde::from_slice::<Packet>(&recv.read_to_end(usize::MAX).await?)?
-                        {
-                            if verify.version_sequence >= 1 {
-                                tracing::info!("[{}]验证成功", connection.remote_address());
-                                connection_list.push(connection.clone());
-                                loop {}
-                                // let mut db_conn = db_conn_pool.acquire().await?;
-                                // let hubnode_info_list =
-                                //     sqlx::query_as::<_, HubNodeInfo>("SELECT * FROM HubNodeList")
-                                //         .fetch_all(&mut *db_conn)
-                                //         .await?;
-                                // for hubnode_info in hubnode_info_list {
-                                //     tracing::info!("{}", hubnode_info.name);
-                                // }
-                            }
-                        }
-                    }
-                    tracing::info!("1111111111111111111111111111");
-                    eyre::Ok(())
+        let peer_node_future = node.accept().await;
+        tokio::spawn({
+            let conn_list = conn_list.clone();
+            let db_conn_pool = db_conn_pool.clone();
+            async move {
+                let peer_node = peer_node_future.await??;
+                conn_list.add(peer_node.clone());
+                tracing::info!("[{}]连接成功", peer_node.remote_ip_address());
+                let mut db_conn = db_conn_pool.acquire().await?;
+                let hub_node_list_rows =
+                    sqlx::query_as::<_, HubNodeListRow>("SELECT * FROM HubNodeList")
+                        .fetch_all(&mut *db_conn)
+                        .await?;
+                for hub_node_list_row in hub_node_list_rows {
+                    tracing::info!("{}", hub_node_list_row.id);
+                    tracing::info!("{}", hub_node_list_row.name);
+                    tracing::info!("{}", hub_node_list_row.ipv4_address);
+                    tracing::info!("{}", hub_node_list_row.ipv6_address);
+                    let _ = hub_node_list_row.cert_der;
+                    tracing::info!("{}", hub_node_list_row.description);
                 }
-            });
-        }
+                eyre::Ok(())
+            }
+        });
     }
 }

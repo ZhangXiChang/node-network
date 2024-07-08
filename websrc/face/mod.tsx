@@ -8,7 +8,7 @@ export default function Face() {
     const [faceContent, setFaceContent] = createSignal(<Landing />);
     (async () => {
         try {
-            await invoke("connect_hubnode");
+            await invoke("connect_server");
             createRoot(() => setFaceContent(<Home />));
         } catch (err: any) {
             createRoot(() => setFaceContent(<Error err={err} />));
