@@ -2108,8 +2108,6 @@ dependencies = [
  "eyre",
  "netprotocol",
  "tool-code",
- "tracing",
- "tracing-subscriber",
 ]
 
 [[package]]

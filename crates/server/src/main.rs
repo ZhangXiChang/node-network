@@ -57,17 +57,17 @@ async fn main() -> Result<()> {
                 conn_list.add(peer_node.clone());
                 tracing::info!("[{}]连接成功", peer_node.remote_ip_address());
                 let mut db_conn = db_conn_pool.acquire().await?;
-                let hub_node_list_rows =
+                let hubnode_list_rows =
                     sqlx::query_as::<_, HubNodeListRow>("SELECT * FROM HubNodeList")
                         .fetch_all(&mut *db_conn)
                         .await?;
-                for hub_node_list_row in hub_node_list_rows {
-                    tracing::info!("{}", hub_node_list_row.id);
-                    tracing::info!("{}", hub_node_list_row.name);
-                    tracing::info!("{}", hub_node_list_row.ipv4_address);
-                    tracing::info!("{}", hub_node_list_row.ipv6_address);
-                    let _ = hub_node_list_row.cert_der;
-                    tracing::info!("{}", hub_node_list_row.description);
+                for hubnode_list_row in hubnode_list_rows {
+                    tracing::info!("{}", hubnode_list_row.id);
+                    tracing::info!("{}", hubnode_list_row.name);
+                    tracing::info!("{}", hubnode_list_row.ipv4_address);
+                    tracing::info!("{}", hubnode_list_row.ipv6_address);
+                    let _ = hubnode_list_row.cert_der;
+                    tracing::info!("{}", hubnode_list_row.description);
                 }
                 eyre::Ok(())
             }
