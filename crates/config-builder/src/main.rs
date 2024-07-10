@@ -4,8 +4,8 @@ use std::{
     path::PathBuf,
 };
 
+use anyhow::Result;
 use clap::Parser;
-use eyre::Result;
 use uuid::Uuid;
 
 #[derive(Parser)]

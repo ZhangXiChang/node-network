@@ -1,12 +1,14 @@
 use std::{net::SocketAddr, sync::Arc, time::Duration};
 
-use eyre::{eyre, Result};
-use quinn::{ClientConfig, Connection, Endpoint, ServerConfig, TransportConfig};
+use anyhow::{anyhow, Context, Result};
+use quinn::{ClientConfig, Connection, Endpoint, ServerConfig, TransportConfig, VarInt};
 use rustls::{pki_types::PrivateKeyDer, RootCertStore};
 use serde::{Deserialize, Serialize};
 use tokio::task::JoinHandle;
 use tool_code::{lock::PointerPreNew, x509::x509_dns_name_from_cert_der};
 use uuid::Uuid;
+
+pub use quinn::{RecvStream, SendStream};
 
 use crate::tls::CertKey;
 
@@ -21,36 +23,39 @@ pub struct NodeInfo {
 #[derive(Clone)]
 pub struct PeerNode {
     connection: Connection,
-    pub info: NodeInfo,
+    info: NodeInfo,
 }
 impl PeerNode {
     fn new(connection: Connection, info: NodeInfo) -> Self {
         Self { connection, info }
     }
-    pub async fn recv(&self) -> Result<Arc<Vec<u8>>> {
-        Ok(Arc::new(
-            self.connection
-                .accept_uni()
-                .await?
-                .read_to_end(usize::MAX)
-                .await?,
-        ))
+    pub fn info(&self) -> NodeInfo {
+        self.info.clone()
     }
-    pub async fn send(&self, data: Arc<Vec<u8>>) -> Result<()> {
-        let mut send = self.connection.open_uni().await?;
-        send.write_all(&data).await?;
-        send.finish()?;
-        Ok(())
+    pub async fn accept_bi(&self) -> Result<(SendStream, RecvStream)> {
+        Ok(self.connection.accept_bi().await?)
+    }
+    pub async fn open_bi(&self) -> Result<(SendStream, RecvStream)> {
+        Ok(self.connection.open_bi().await.context("")?)
+    }
+    pub async fn accept_uni(&self) -> Result<RecvStream> {
+        Ok(self.connection.accept_uni().await?)
+    }
+    pub async fn open_uni(&self) -> Result<SendStream> {
+        Ok(self.connection.open_uni().await?)
     }
     pub fn remote_ip_address(&self) -> SocketAddr {
         self.connection.remote_address()
+    }
+    pub fn close(&self, code: u32, reason: Arc<Vec<u8>>) {
+        self.connection.close(VarInt::from_u32(code), &*reason);
     }
 }
 
 #[derive(Clone)]
 pub struct Node {
     endpoint: Endpoint,
-    pub info: NodeInfo,
+    info: NodeInfo,
     peer_hubnode: PointerPreNew<PeerNode>,
 }
 impl Node {
@@ -95,13 +100,16 @@ impl Node {
             peer_hubnode: PointerPreNew::new(),
         })
     }
+    pub fn info(&self) -> NodeInfo {
+        self.info.clone()
+    }
     pub async fn accept(&self) -> JoinHandle<Result<PeerNode>> {
         let incoming_opt = self.endpoint.accept().await;
         tokio::spawn({
             let node_info = self.info.clone();
             async move {
                 let connection = incoming_opt
-                    .ok_or(eyre!("没有传入的连接"))?
+                    .ok_or(anyhow!("没有传入的连接"))?
                     .accept()?
                     .await?;
                 //发送自身节点信息并接收对方节点信息

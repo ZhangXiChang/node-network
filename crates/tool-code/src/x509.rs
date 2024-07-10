@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use eyre::{eyre, Result};
+use anyhow::{anyhow, Result};
 use x509_parser::{
     certificate::X509Certificate,
     der_parser::asn1_rs::FromDer,
@@ -20,5 +20,5 @@ pub fn x509_dns_name_from_cert_der(cert_der: Arc<Vec<u8>>) -> Result<String> {
             }
         }
     }
-    Err(eyre!("获取DNSName失败"))
+    Err(anyhow!("获取DNSName失败"))
 }

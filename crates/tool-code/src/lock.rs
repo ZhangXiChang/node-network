@@ -1,6 +1,6 @@
 use std::sync::{Arc, Mutex, MutexGuard};
 
-use eyre::{eyre, Result};
+use anyhow::{anyhow, Result};
 
 pub trait Get<T> {
     fn get(&self) -> T;
@@ -61,6 +61,6 @@ impl<T: Clone> PointerPreNew<T> {
         *self.value.lock() = Some(value);
     }
     pub fn get(&self) -> Result<T> {
-        self.value.lock().clone().ok_or(eyre!("没有设置值"))
+        self.value.lock().clone().ok_or(anyhow!("没有设置值"))
     }
 }

@@ -5,8 +5,12 @@ export default function Home() {
     const [sidebarHubNodeLogoButton, setSidebarHubNodeLogoButton] = createSignal(<></>);
     (async () => {
         try {
-            await invoke("get_user_star_hubnode_logo");
-            createRoot(() => { setSidebarHubNodeLogoButton(<></>) });
+            let userStarHubNodeLogo = await invoke("get_user_star_hubnode_logo") as string[];
+            createRoot(() => {
+                setSidebarHubNodeLogoButton(<>
+                    <img class="w-48px h-48px rounded" src={"data:image/png;base64," + userStarHubNodeLogo[0]} />
+                </>)
+            });
         } catch (err: any) {
             createRoot(() => { setSidebarHubNodeLogoButton(<>{err}</>) });
         }
