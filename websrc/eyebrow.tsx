@@ -15,7 +15,7 @@ export default function Eyebrow() {
     const openGithub = () => invoke("open", { path: "https://github.com/ZhangXiChang/node-network" });
     return (<div class="h-32px pl-2px pr-4px flex">
         <div class="flex justify-center items-center" data-tauri-drag-region>
-            <div class="mx-4px hover:cursor-pointer hover:bg-gray-3 hover:rounded" onclick={openGithub}>
+            <div class="mx-4px rounded hover:cursor-pointer hover:bg-gray-3" onclick={openGithub}>
                 <div class="i-line-md:github-loop w-24px h-24px"></div>
             </div>
         </div>
@@ -23,13 +23,13 @@ export default function Eyebrow() {
             <label class="h-24px font-bold" id="window-title-text">节点网络</label>
         </div>
         <div class="flex justify-center items-center" data-tauri-drag-region>
-            <div class="mx-4px hover:cursor-pointer hover:bg-gray-3 hover:rounded" onclick={() => appWindow.minimize()}>
+            <div class="mx-4px rounded hover:cursor-pointer hover:bg-gray-3" onclick={() => appWindow.minimize()}>
                 <div class="i-mdi:window-minimize w-16px h-16px"></div>
             </div>
-            <div class="mx-4px hover:cursor-pointer hover:bg-gray-3 hover:rounded" onclick={toggleMaximize}>
+            <div class="mx-4px rounded hover:cursor-pointer hover:bg-gray-3" onclick={toggleMaximize}>
                 {windowMaximizeIcon()}
             </div>
-            <div class="mx-4px hover:cursor-pointer hover:bg-gray-3 hover:rounded" onclick={() => appWindow.close()}>
+            <div class="mx-4px rounded hover:cursor-pointer hover:bg-gray-3" onclick={() => appWindow.close()}>
                 <div class="i-mdi:window-close w-16px h-16px"></div>
             </div>
         </div>
