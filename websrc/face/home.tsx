@@ -1,14 +1,6 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import { createRoot, createSignal } from "solid-js";
 
-enum RootOptions {
-    Discover,
-    HubNode
-}
-enum DiscoverOptions {
-    Home,
-}
-
 interface SelectStyle {
     ed: string;
     un: string;
@@ -19,24 +11,30 @@ interface ButtonStyle {
 }
 
 class Button {
-    name: string;
+    group: string;
     style: ButtonStyle;
 
-    constructor(name: string, style: ButtonStyle) {
-        this.name = name;
+    constructor(group: string, style: ButtonStyle) {
+        this.group = group;
         this.style = style;
     }
+    id(): string {
+        return this.group;
+    }
     selectedStyle(): string {
-        return this.name + " " + this.style.base + " " + this.style.select.ed;
+        return this.style.base + " " + this.style.select.ed;
     }
     unselectedStyle(): string {
-        return this.name + " " + this.style.base + " " + this.style.select.un;
+        return this.style.base + " " + this.style.select.un;
     }
     select(target: Element) {
-        for (let i = 0; i < document.getElementsByClassName(this.selectedStyle()).length; i++) {
-            document.getElementsByClassName(this.selectedStyle())[i].className = this.unselectedStyle();
+        if (target.className != this.selectedStyle()) {
+            let buttonGroup = document.querySelectorAll("#" + this.id());
+            for (let i = 0; i < buttonGroup.length; i++) {
+                buttonGroup[i].className = this.unselectedStyle();
+            }
+            target.className = this.selectedStyle();
         }
-        target.className = this.selectedStyle();
     }
 }
 
@@ -64,21 +62,18 @@ const DiscoverOptionsButton = new Button("DiscoverOptionsButton", {
 
 export default function Home() {
     const [sidebarHubNodeLogoButton, setSidebarHubNodeLogoButton] = createSignal(<></>);
-    const [rootOptions, setRootOptions] = createSignal(RootOptions.Discover);
-    const [discoverOptions, setDiscoverOptions] = createSignal(DiscoverOptions.Home);
     (async () => {
         try {
             let userStarHubNodeLogo = await invoke("get_user_star_hubnode_logo") as string[];
             createRoot(() => {
                 setSidebarHubNodeLogoButton(<>
-                    {userStarHubNodeLogo.map((logo) => (
-                        <div class={RootOptionsButton.unselectedStyle()} onclick={(e) => {
-                            if (rootOptions() != RootOptions.HubNode) {
-                                setRootOptions(RootOptions.HubNode);
-                                RootOptionsButton.select(e.currentTarget);
-                            }
-                        }}>
-                            <img class="w-48px h-48px" src={"data:image/png;base64," + logo} />
+                    {userStarHubNodeLogo.map((_) => (
+                        <div class="py-4px flex justify-center items-center">
+                            <div class={HubNodeOptionsButton.unselectedStyle()} id={HubNodeOptionsButton.id()} onclick={(e) => {
+                                HubNodeOptionsButton.select(e.currentTarget);
+                            }}>
+                                <div class="i-line-md:compass-loop w-48px h-48px"></div>
+                            </div>
                         </div>
                     ))}
                 </>)
@@ -88,18 +83,15 @@ export default function Home() {
         }
     })();
     return (<>
-        <div class="w-70px flex flex-col items-center">
-            <div class="h-55px flex justify-center items-center">
-                <div class={RootOptionsButton.selectedStyle()} onclick={(e) => {
-                    if (rootOptions() != RootOptions.Discover) {
-                        setRootOptions(RootOptions.Discover);
-                        RootOptionsButton.select(e.currentTarget);
-                    }
+        <div class="w-70px flex flex-col">
+            <div class="py-4px flex justify-center items-center">
+                <div class={RootOptionsButton.selectedStyle()} id={RootOptionsButton.id()} onclick={(e) => {
+                    RootOptionsButton.select(e.currentTarget);
                 }}>
                     <div class="i-line-md:compass-loop w-48px h-48px"></div>
                 </div>
             </div>
-            <div class="flex-1">
+            <div class="flex flex-col">
                 {sidebarHubNodeLogoButton()}
             </div>
         </div>
@@ -107,12 +99,9 @@ export default function Home() {
             <div class="h-55px pl-15px flex items-center">
                 <label class="font-bold text-size-2xl">发现</label>
             </div>
-            <div class="flex-1 flex flex-col items-center">
-                <div class={DiscoverOptionsButton.selectedStyle()} onclick={(e) => {
-                    if (discoverOptions() != DiscoverOptions.Home) {
-                        setDiscoverOptions(DiscoverOptions.Home);
-                        DiscoverOptionsButton.select(e.currentTarget);
-                    }
+            <div class="flex flex-col items-center">
+                <div class={DiscoverOptionsButton.selectedStyle()} id={DiscoverOptionsButton.id()} onclick={(e) => {
+                    DiscoverOptionsButton.select(e.currentTarget);
                 }}>
                     <label>主页</label>
                 </div>
