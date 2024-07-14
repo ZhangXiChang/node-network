@@ -7,6 +7,10 @@ mod tests {
     use std::sync::Arc;
 
     use anyhow::Result;
+    use hickory_resolver::{
+        config::{ResolverConfig, ResolverOpts},
+        AsyncResolver,
+    };
     use tool_code::lock::Pointer;
 
     use crate::{node::Node, tls::CertKey};
@@ -68,6 +72,19 @@ mod tests {
         node_c
             .access_hubnode("[::1]:10271".parse()?, node_h.info().cert_der)
             .await?;
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn dns_resolver() -> Result<()> {
+        println!(
+            "IP address: {:?}",
+            AsyncResolver::tokio(ResolverConfig::cloudflare(), ResolverOpts::default())
+                .lookup_ip("www.bilibili.com")
+                .await?
+                .iter()
+                .next()
+        );
         Ok(())
     }
 }

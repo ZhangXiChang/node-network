@@ -37,6 +37,13 @@ class Button {
         }
     }
 }
+class ButtonGroup {
+    buttons: Button[];
+
+    constructor(buttons: Button[]) {
+        this.buttons = buttons;
+    }
+}
 
 const RootOptionsButton = new Button("RootOptionsButton", {
     base: "rounded",
@@ -46,10 +53,10 @@ const RootOptionsButton = new Button("RootOptionsButton", {
     }
 });
 const HubNodeOptionsButton = new Button("RootOptionsButton", {
-    base: "rounded",
+    base: "",
     select: {
-        ed: "bg-blue",
-        un: "hover:cursor-pointer hover:bg-gray-3"
+        ed: "rounded bg-blue",
+        un: "rounded-full hover:cursor-pointer hover:bg-gray-3"
     }
 });
 const DiscoverOptionsButton = new Button("DiscoverOptionsButton", {
@@ -64,7 +71,7 @@ export default function Home() {
     const [sidebarHubNodeLogoButton, setSidebarHubNodeLogoButton] = createSignal(<></>);
     (async () => {
         try {
-            let userStarHubNodeLogo = await invoke("get_user_star_hubnode_logo") as string[];
+            let userStarHubNodeLogo = ["", ""];//await invoke("get_user_star_hubnode_logo") as string[];
             createRoot(() => {
                 setSidebarHubNodeLogoButton(<>
                     {userStarHubNodeLogo.map((_) => (

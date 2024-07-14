@@ -1,9 +1,9 @@
 import { defineConfig } from "vite";
-import solid from "vite-plugin-solid";
-import unocss from "unocss/vite"
+import solidPlugin from "vite-plugin-solid";
+import unocssPlugin from "unocss/vite"
 
 export default defineConfig(async () => ({
-    plugins: [unocss(), solid()],
+    plugins: [solidPlugin(), unocssPlugin()],
     clearScreen: false,
     server: {
         host: "127.0.0.1",

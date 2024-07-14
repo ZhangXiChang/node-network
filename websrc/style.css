@@ -13,7 +13,3 @@ body {
 label {
     pointer-events: none;
 }
-
-#window-title-text {
-    text-shadow: 0px 0px 10px gray;
-}

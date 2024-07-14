@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-serde = { version = "1.0.203", features = ["derive"] } #编解码特性
+serde = { version = "1.0.204", features = ["derive"] } #编解码特性
 sqlx = { version = "0.7.4", default-features = false, features = [
     "macros",
 ] } #数据库交互

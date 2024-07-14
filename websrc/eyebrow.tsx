@@ -20,7 +20,7 @@ export default function Eyebrow() {
             </div>
         </div>
         <div class="flex-1 flex items-center" data-tauri-drag-region>
-            <label class="h-24px font-bold" id="window-title-text">节点网络</label>
+            <label class="h-24px font-bold" style={{ "text-shadow": "0px 0px 10px gray" }}>节点网络</label>
         </div>
         <div class="flex justify-center items-center" data-tauri-drag-region>
             <div class="mx-4px rounded hover:cursor-pointer hover:bg-gray-3" onclick={() => appWindow.minimize()}>
