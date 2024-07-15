@@ -9,14 +9,15 @@
     },
     "dependencies": {
         "@tauri-apps/api": "1.6.0",
+        "@types/uuid": "10.0.0",
         "solid-js": "1.8.18"
     },
     "devDependencies": {
-        "typescript": "5.5.3",
+        "@iconify/json": "2.2.227",
         "@tauri-apps/cli": "1.6.0",
-        "vite": "5.3.3",
-        "vite-plugin-solid": "2.10.2",
+        "typescript": "5.5.3",
         "unocss": "0.61.3",
-        "@iconify/json": "2.2.227"
+        "vite": "5.3.3",
+        "vite-plugin-solid": "2.10.2"
     }
 }

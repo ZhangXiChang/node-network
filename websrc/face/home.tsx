@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import { createRoot, createSignal } from "solid-js";
+import { v4 as uuidv4 } from 'uuid';
 
 interface SelectStyle {
     ed: string;
@@ -11,15 +12,15 @@ interface ButtonStyle {
 }
 
 class Button {
-    group: string;
-    style: ButtonStyle;
+    private uuid: string;
+    private style: ButtonStyle;
 
-    constructor(group: string, style: ButtonStyle) {
-        this.group = group;
+    constructor(style: ButtonStyle) {
+        this.uuid = uuidv4();
         this.style = style;
     }
     id(): string {
-        return this.group;
+        return this.uuid;
     }
     selectedStyle(): string {
         return this.style.base + " " + this.style.select.ed;
@@ -27,62 +28,71 @@ class Button {
     unselectedStyle(): string {
         return this.style.base + " " + this.style.select.un;
     }
-    select(target: Element) {
-        if (target.className != this.selectedStyle()) {
-            let buttonGroup = document.querySelectorAll("#" + this.id());
-            for (let i = 0; i < buttonGroup.length; i++) {
-                buttonGroup[i].className = this.unselectedStyle();
-            }
-            target.className = this.selectedStyle();
-        }
-    }
 }
 class ButtonGroup {
-    buttons: Button[];
+    private buttons: Button[];
 
     constructor(buttons: Button[]) {
         this.buttons = buttons;
     }
+    add(button: Button) {
+        this.buttons.push(button);
+    }
+    select(targetButton: Button) {
+        const targetElement = document.getElementById(targetButton.id())!;
+        if (targetElement.className != targetButton.selectedStyle()) {
+            const otherElementList: Element[] = [];
+            this.buttons.map((button) => {
+                otherElementList.push(document.getElementById(button.id())!);
+            });
+            otherElementList.map((element, i) => {
+                element.className = this.buttons[i].unselectedStyle();
+            });
+            targetElement.className = targetButton.selectedStyle();
+        }
+    }
 }
-
-const RootOptionsButton = new Button("RootOptionsButton", {
-    base: "rounded",
-    select: {
-        ed: "bg-blue",
-        un: "hover:cursor-pointer hover:bg-gray-3"
-    }
-});
-const HubNodeOptionsButton = new Button("RootOptionsButton", {
-    base: "",
-    select: {
-        ed: "rounded bg-blue",
-        un: "rounded-full hover:cursor-pointer hover:bg-gray-3"
-    }
-});
-const DiscoverOptionsButton = new Button("DiscoverOptionsButton", {
-    base: "w-95% h-40px pl-5% rounded flex items-center",
-    select: {
-        ed: "bg-blue",
-        un: "hover:cursor-pointer hover:bg-gray-3"
-    }
-});
 
 export default function Home() {
     const [sidebarHubNodeLogoButton, setSidebarHubNodeLogoButton] = createSignal(<></>);
+    const discoverButton = new Button({
+        base: "rounded",
+        select: {
+            ed: "bg-blue",
+            un: "hover:cursor-pointer hover:bg-gray-3"
+        }
+    });
+    const homeButton = new Button({
+        base: "w-95% h-40px pl-5% rounded flex items-center",
+        select: {
+            ed: "bg-blue",
+            un: "hover:cursor-pointer hover:bg-gray-3"
+        }
+    });
+    const rootMenuButton = new ButtonGroup([discoverButton]);
+    const discoverMenuButton = new ButtonGroup([homeButton]);
     (async () => {
         try {
-            let userStarHubNodeLogo = ["", ""];//await invoke("get_user_star_hubnode_logo") as string[];
+            const userStarHubNodeLogo = ["", ""];//await invoke("get_user_star_hubnode_logo") as string[];
             createRoot(() => {
                 setSidebarHubNodeLogoButton(<>
-                    {userStarHubNodeLogo.map((_) => (
-                        <div class="py-4px flex justify-center items-center">
-                            <div class={HubNodeOptionsButton.unselectedStyle()} id={HubNodeOptionsButton.id()} onclick={(e) => {
-                                HubNodeOptionsButton.select(e.currentTarget);
+                    {userStarHubNodeLogo.map((_) => {
+                        const button = new Button({
+                            base: "",
+                            select: {
+                                ed: "rounded bg-blue",
+                                un: "rounded-full hover:cursor-pointer hover:bg-gray-3"
+                            }
+                        });
+                        rootMenuButton.add(button);
+                        return (<div class="py-4px flex justify-center items-center">
+                            <div class={button.unselectedStyle()} id={button.id()} onclick={() => {
+                                rootMenuButton.select(button);
                             }}>
                                 <div class="i-line-md:compass-loop w-48px h-48px"></div>
                             </div>
-                        </div>
-                    ))}
+                        </div>)
+                    })}
                 </>)
             });
         } catch (err: any) {
@@ -92,8 +102,8 @@ export default function Home() {
     return (<>
         <div class="w-70px flex flex-col">
             <div class="py-4px flex justify-center items-center">
-                <div class={RootOptionsButton.selectedStyle()} id={RootOptionsButton.id()} onclick={(e) => {
-                    RootOptionsButton.select(e.currentTarget);
+                <div class={discoverButton.selectedStyle()} id={discoverButton.id()} onclick={() => {
+                    rootMenuButton.select(discoverButton);
                 }}>
                     <div class="i-line-md:compass-loop w-48px h-48px"></div>
                 </div>
@@ -107,8 +117,8 @@ export default function Home() {
                 <label class="font-bold text-size-2xl">发现</label>
             </div>
             <div class="flex flex-col items-center">
-                <div class={DiscoverOptionsButton.selectedStyle()} id={DiscoverOptionsButton.id()} onclick={(e) => {
-                    DiscoverOptionsButton.select(e.currentTarget);
+                <div class={homeButton.selectedStyle()} id={homeButton.id()} onclick={() => {
+                    discoverMenuButton.select(homeButton);
                 }}>
                     <label>主页</label>
                 </div>
