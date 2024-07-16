@@ -1,0 +1,17 @@
+[package]
+name = "tui"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+node-network = { path = "../" }
+
+anyhow = "1.0.86"                                   #错误处理
+tokio = { version = "1.38.0", features = ["full"] } #异步运行时
+tracing = "0.1.40"                                  #日志生产者
+tracing-subscriber = "0.3.18"                       #日志消费者
+
+dialoguer = { version = "0.11.0", default-features = false, features = [
+    "history",
+    "completion",
+] }

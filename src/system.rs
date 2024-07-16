@@ -8,13 +8,13 @@ use netprotocol::{
 };
 use tool_code::lock::PointerPreNew;
 
-const SERVER_CERT_DER: &[u8] = include_bytes!("../assets/server.cer");
+const SERVER_CERT_DER: &[u8] = include_bytes!("../assets/server/server.cer");
 
-pub struct App {
+pub struct System {
     node: Node,
     server: PointerPreNew<PeerNode>,
 }
-impl App {
+impl System {
     pub fn new() -> Result<Self> {
         Ok(Self {
             node: Node::new(

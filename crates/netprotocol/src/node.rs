@@ -59,10 +59,10 @@ pub struct Node {
     peer_hubnode: PointerPreNew<PeerNode>,
 }
 impl Node {
-    pub fn new<T: Into<String>>(
+    pub fn new(
         ip_address: SocketAddr,
-        user_name: T,
-        description: T,
+        user_name: &str,
+        description: &str,
         cert_key: Option<CertKey>,
     ) -> Result<Self> {
         let (mut server_config, cert_der) = if let Some(cert_key) = cert_key {
@@ -93,8 +93,8 @@ impl Node {
             endpoint: Endpoint::server(server_config, ip_address)?,
             info: NodeInfo {
                 uuid: Arc::new(Uuid::new_v4().to_string()),
-                user_name: Arc::new(user_name.into()),
-                description: Arc::new(description.into()),
+                user_name: Arc::new(user_name.to_string()),
+                description: Arc::new(description.to_string()),
                 cert_der,
             },
             peer_hubnode: PointerPreNew::new(),

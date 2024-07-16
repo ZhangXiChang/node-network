@@ -1,12 +1,10 @@
 [workspace]
-members = ["./crates/*", "./webapp"]
-package.version = "0.1.0"
-package.edition = "2021"
+members = ["./crates/*", "./tui", "./webapp"]
 
 [package]
 name = "node-network"
-version.workspace = true
-edition.workspace = true
+version = "0.1.0"
+edition = "2021"
 
 [dependencies]
 tool-code = { path = "./crates/tool-code" }

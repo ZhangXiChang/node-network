@@ -12,8 +12,8 @@ use tokio::task::JoinHandle;
 use tool_code::lock::Container;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-const CERT_DER: &[u8] = include_bytes!("../../../assets/server.cer");
-const KEY_DER: &[u8] = include_bytes!("../../../assets/server.key");
+const CERT_DER: &[u8] = include_bytes!("../../../assets/server/server.cer");
+const KEY_DER: &[u8] = include_bytes!("../../../assets/server/server.key");
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -39,7 +39,7 @@ async fn main() -> Result<()> {
     .context("创建节点服务端")?;
     tracing::info!("节点服务端初始化完成");
     //初始化数据库连接池
-    let db_conn_pool = SqlitePool::connect("./assets/server.db")
+    let db_conn_pool = SqlitePool::connect("./assets/server/server.db")
         .await
         .context("创建数据库连接池失败")?;
     tracing::info!("数据库连接池初始化完成");

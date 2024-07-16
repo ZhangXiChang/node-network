@@ -2,7 +2,7 @@
 
 use anyhow::{anyhow, Result};
 use base64::{engine::general_purpose, Engine};
-use node_network::app::App;
+use node_network::system::System;
 use tauri::Manager;
 use window_shadows::set_shadow;
 
@@ -15,7 +15,7 @@ async fn main() -> Result<()> {
             }
             Ok(())
         })
-        .manage(App::new()?)
+        .manage(System::new()?)
         .invoke_handler(tauri::generate_handler![
             open,
             connect_server,
@@ -36,9 +36,9 @@ async fn open(path: String) -> Result<(), String> {
 }
 
 #[tauri::command]
-async fn connect_server<'a>(app: tauri::State<'a, App>) -> Result<(), String> {
+async fn connect_server<'a>(system: tauri::State<'a, System>) -> Result<(), String> {
     async move {
-        app.connect_server().await?;
+        system.connect_server().await?;
         anyhow::Ok(())
     }
     .await
@@ -46,10 +46,13 @@ async fn connect_server<'a>(app: tauri::State<'a, App>) -> Result<(), String> {
 }
 
 #[tauri::command]
-async fn get_user_star_hubnode_logo<'a>(app: tauri::State<'a, App>) -> Result<Vec<String>, String> {
+async fn get_user_star_hubnode_logo<'a>(
+    system: tauri::State<'a, System>,
+) -> Result<Vec<String>, String> {
     async move {
         anyhow::Ok(
-            app.get_user_star_hubnode_logo()
+            system
+                .get_user_star_hubnode_logo()
                 .await?
                 .iter()
                 .map(|hubnode_table| general_purpose::STANDARD.encode(hubnode_table.logo.clone()))

@@ -23,8 +23,8 @@ mod tests {
             "服务端",
             "服务端描述",
             Some(CertKey {
-                cert_der: Arc::new(include_bytes!("../../../assets/server.cer").to_vec()),
-                key_der: Arc::new(include_bytes!("../../../assets/server.key").to_vec()),
+                cert_der: Arc::new(include_bytes!("../../../assets/server/server.cer").to_vec()),
+                key_der: Arc::new(include_bytes!("../../../assets/server/server.key").to_vec()),
             }),
         )?;
         let peer_node_s = Pointer::new(None);
