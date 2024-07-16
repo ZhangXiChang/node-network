@@ -104,13 +104,10 @@ async fn handling_packet(
         )
         .context("解析数据包失败")?
         {
-            Packet::GetUserStarHubnodeLogo => {
-                tracing::info!(
-                    "[{}]获取用户收藏中枢节点的Logo列表",
-                    peer_node.remote_ip_address()
-                );
+            Packet::GetHubNodeTable => {
+                tracing::info!("[{}]获取中枢节点表", peer_node.remote_ip_address());
                 let mut db_conn = db_conn_pool.acquire().await.context("获取数据库连接失败")?;
-                let hubnode_table = sqlx::query_as::<_, HubNodeTable>("SELECT logo FROM HubNode")
+                let hubnode_table = sqlx::query_as::<_, HubNodeTable>("SELECT * FROM HubNode")
                     .fetch_all(&mut *db_conn)
                     .await
                     .context("从数据库查询所有中枢节点Logo失败")?;

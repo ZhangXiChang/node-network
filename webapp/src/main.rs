@@ -52,7 +52,7 @@ async fn get_user_star_hubnode_logo<'a>(
     async move {
         anyhow::Ok(
             system
-                .get_user_star_hubnode_logo()
+                .get_hubnode_table()
                 .await?
                 .iter()
                 .map(|hubnode_table| general_purpose::STANDARD.encode(hubnode_table.logo.clone()))

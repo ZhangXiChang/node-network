@@ -11,7 +11,7 @@ mod tests {
         let system = System::new().context("创建App失败")?;
         system.connect_server().await.context("连接服务器失败")?;
         system
-            .get_user_star_hubnode_logo()
+            .get_hubnode_table()
             .await
             .context("获取用户收藏中枢节点Logo失败")?;
         Ok(())

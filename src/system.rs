@@ -10,6 +10,7 @@ use tool_code::lock::PointerPreNew;
 
 const SERVER_CERT_DER: &[u8] = include_bytes!("../assets/server/server.cer");
 
+#[derive(Clone)]
 pub struct System {
     node: Node,
     server: PointerPreNew<PeerNode>,
@@ -39,7 +40,7 @@ impl System {
         );
         Ok(())
     }
-    pub async fn get_user_star_hubnode_logo(&self) -> Result<Vec<HubNodeTable>> {
+    pub async fn get_hubnode_table(&self) -> Result<Vec<HubNodeTable>> {
         let (mut send, mut recv) = self
             .server
             .get()
@@ -47,11 +48,9 @@ impl System {
             .open_bi()
             .await
             .context("打开全双工通道失败")?;
-        send.write_all(
-            &rmp_serde::to_vec(&Packet::GetUserStarHubnodeLogo).context("编码数据包失败")?,
-        )
-        .await
-        .context("写入数据包失败")?;
+        send.write_all(&rmp_serde::to_vec(&Packet::GetHubNodeTable).context("编码数据包失败")?)
+            .await
+            .context("写入数据包失败")?;
         send.finish().context("发送数据包失败")?;
         Ok(rmp_serde::from_slice(
             &recv
