@@ -11,7 +11,5 @@ tokio = { version = "1.38.0", features = ["full"] } #异步运行时
 tracing = "0.1.40"                                  #日志生产者
 tracing-subscriber = "0.3.18"                       #日志消费者
 
-dialoguer = { version = "0.11.0", default-features = false, features = [
-    "history",
-    "completion",
-] }
+ratatui = "0.27.0"     #TUI库
+tui-textarea = "0.5.1" #TUI文本框库
