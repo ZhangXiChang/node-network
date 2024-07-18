@@ -4605,6 +4605,7 @@ dependencies = [
  "node-network",
  "ratatui",
  "tokio",
+ "tool-code",
  "tracing",
  "tracing-subscriber",
  "tui-textarea",

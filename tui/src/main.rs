@@ -14,6 +14,7 @@ use ratatui::{
     widgets::{Block, Borders},
     Terminal,
 };
+use tool_code::lock::{Get, Pointer};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use tui_textarea::{CursorMove, TextArea};
 
@@ -39,37 +40,54 @@ async fn main() -> Result<()> {
         //设定控件布局
         let root_layout = Layout::vertical([Constraint::Length(3), Constraint::Min(0)]);
         //初始化文本输入控件
-        let mut textinput = TextArea::default();
-        textinput.set_cursor_line_style(Style::new());
-        textinput.set_block(Block::new().borders(Borders::ALL).title("输入"));
-        loop {
-            terminal.draw(|frame| {
-                let root_layout_area = root_layout.split(frame.size());
-                frame.render_widget(textinput.widget(), root_layout_area[0]);
+        let textinput = Pointer::new(TextArea::default());
+        {
+            let mut textinput = textinput.lock();
+            textinput.set_cursor_line_style(Style::new());
+            textinput.set_block(Block::new().borders(Borders::ALL).title("输入"));
+        }
+        let is_loop = Pointer::new(true);
+        while is_loop.get() {
+            terminal.draw({
+                let root_layout = root_layout.clone();
+                let textinput = textinput.clone();
+                move |frame| {
+                    let root_layout_area = root_layout.split(frame.size());
+                    frame.render_widget(textinput.get().widget(), root_layout_area[0]);
+                }
             })?;
             if event::poll(Duration::from_millis(16))? {
                 let event = event::read()?;
-                if let Event::Key(key) = event {
-                    if key.kind == KeyEventKind::Press {
-                        if key.code == KeyCode::Esc {
-                            break;
+                tokio::spawn({
+                    let is_loop = is_loop.clone();
+                    let textinput = textinput.clone();
+                    async move {
+                        if let Event::Key(key) = event {
+                            if key.kind == KeyEventKind::Press {
+                                if key.code == KeyCode::Esc {
+                                    is_loop.set(false);
+                                }
+                            }
+                        }
+                        {
+                            let mut textinput = textinput.lock();
+                            match event {
+                                Event::Key(KeyEvent {
+                                    code: KeyCode::Enter,
+                                    ..
+                                }) => {
+                                    if !textinput.is_empty() {
+                                        textinput.move_cursor(CursorMove::Head);
+                                        textinput.delete_line_by_end();
+                                    }
+                                }
+                                _ => {
+                                    textinput.input(event);
+                                }
+                            }
                         }
                     }
-                }
-                match event {
-                    Event::Key(KeyEvent {
-                        code: KeyCode::Enter,
-                        ..
-                    }) => {
-                        if !textinput.is_empty() {
-                            textinput.move_cursor(CursorMove::Head);
-                            textinput.delete_line_by_end();
-                        }
-                    }
-                    _ => {
-                        textinput.input(event);
-                    }
-                }
+                });
             }
         }
         anyhow::Ok(())
