@@ -5,9 +5,7 @@ use node_network::system::System;
 use ratatui::{
     backend::CrosstermBackend,
     crossterm::{
-        event::{
-            self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode, KeyEvent, KeyEventKind,
-        },
+        event::{self, Event, KeyCode, KeyEvent, KeyEventKind},
         execute,
         terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
     },
@@ -17,7 +15,7 @@ use ratatui::{
     Terminal,
 };
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
-use tui_textarea::TextArea;
+use tui_textarea::{CursorMove, TextArea};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -32,42 +30,55 @@ async fn main() -> Result<()> {
     //初始化系统
     let system = System::new()?;
     system.connect_server().await.context("系统初始化失败")?;
-    //初始化终端
-    execute!(stdout(), EnterAlternateScreen, EnableMouseCapture)?;
+    //初始化终端屏幕
+    execute!(stdout(), EnterAlternateScreen)?;
     enable_raw_mode()?;
-    let mut terminal = Terminal::new(CrosstermBackend::new(stdout()))?;
-    //设定控件布局
-    let root_layout = Layout::vertical([Constraint::Length(3), Constraint::Min(0)]);
-    //初始化文本输入控件
-    let mut textinput = TextArea::default();
-    textinput.set_cursor_line_style(Style::new());
-    textinput.set_block(Block::new().borders(Borders::ALL).title("输入"));
-    loop {
-        terminal.draw(|frame| {
-            let root_layout_area = root_layout.split(frame.size());
-            frame.render_widget(textinput.widget(), root_layout_area[0]);
-        })?;
-        if event::poll(Duration::from_millis(16))? {
-            let event = event::read()?;
-            if let Event::Key(key) = event {
-                if key.kind == KeyEventKind::Press {
-                    if key.code == KeyCode::Esc {
-                        break;
+    let terminal_result = async {
+        //初始化终端
+        let mut terminal = Terminal::new(CrosstermBackend::new(stdout()))?;
+        //设定控件布局
+        let root_layout = Layout::vertical([Constraint::Length(3), Constraint::Min(0)]);
+        //初始化文本输入控件
+        let mut textinput = TextArea::default();
+        textinput.set_cursor_line_style(Style::new());
+        textinput.set_block(Block::new().borders(Borders::ALL).title("输入"));
+        loop {
+            terminal.draw(|frame| {
+                let root_layout_area = root_layout.split(frame.size());
+                frame.render_widget(textinput.widget(), root_layout_area[0]);
+            })?;
+            if event::poll(Duration::from_millis(16))? {
+                let event = event::read()?;
+                if let Event::Key(key) = event {
+                    if key.kind == KeyEventKind::Press {
+                        if key.code == KeyCode::Esc {
+                            break;
+                        }
+                    }
+                }
+                match event {
+                    Event::Key(KeyEvent {
+                        code: KeyCode::Enter,
+                        ..
+                    }) => {
+                        if !textinput.is_empty() {
+                            textinput.move_cursor(CursorMove::Head);
+                            textinput.delete_line_by_end();
+                        }
+                    }
+                    _ => {
+                        textinput.input(event);
                     }
                 }
             }
-            match event {
-                Event::Key(KeyEvent {
-                    code: KeyCode::Enter,
-                    ..
-                }) => (),
-                _ => {
-                    textinput.input(event);
-                }
-            }
         }
+        anyhow::Ok(())
     }
+    .await;
     disable_raw_mode()?;
-    execute!(stdout(), LeaveAlternateScreen, DisableMouseCapture)?;
+    execute!(stdout(), LeaveAlternateScreen)?;
+    if let Err(err) = terminal_result {
+        eprintln!("{:?}", err);
+    }
     Ok(())
 }
