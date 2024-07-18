@@ -6,7 +6,6 @@ pub trait Get<T> {
     fn get(&self) -> T;
 }
 
-#[derive(Clone)]
 pub struct Pointer<T> {
     value: Arc<Mutex<T>>,
 }
@@ -21,6 +20,13 @@ impl<T> Pointer<T> {
     }
     pub fn set(&self, value: T) {
         *self.lock() = value;
+    }
+}
+impl<T> Clone for Pointer<T> {
+    fn clone(&self) -> Self {
+        Self {
+            value: self.value.clone(),
+        }
     }
 }
 impl<T: Clone> Get<T> for Pointer<T> {
