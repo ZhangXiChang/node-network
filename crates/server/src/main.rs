@@ -9,7 +9,7 @@ use netprotocol::{
 };
 use sqlx::SqlitePool;
 use tokio::task::JoinHandle;
-use tool_code::lock::Container;
+use tool_code::lock::Pointer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 const CERT_DER: &[u8] = include_bytes!("../../../assets/server/server.cer");
@@ -44,7 +44,7 @@ async fn main() -> Result<()> {
         .context("创建数据库连接池失败")?;
     tracing::info!("数据库连接池初始化完成");
     //连接列表
-    let conn_list = Container::new();
+    let conn_list = Pointer::new(Vec::new());
     //主循环
     loop {
         let peer_node_future = node.accept().await;
@@ -58,7 +58,7 @@ async fn main() -> Result<()> {
 
 async fn incoming_handling(
     peer_node_future: JoinHandle<Result<PeerNode>>,
-    conn_list: Container<PeerNode>,
+    conn_list: Pointer<Vec<PeerNode>>,
     db_conn_pool: SqlitePool,
 ) {
     if let Err(err) = async move {
@@ -66,7 +66,7 @@ async fn incoming_handling(
             .await
             .context("接收节点连接线程出错")?
             .context("接收节点连接失败")?;
-        conn_list.add(peer_node.clone());
+        conn_list.lock().push(peer_node.clone());
         tracing::info!("[{}]连接成功", peer_node.remote_ip_address());
         loop {
             match peer_node.accept_bi().await {

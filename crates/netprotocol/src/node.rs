@@ -5,7 +5,7 @@ use quinn::{ClientConfig, Connection, Endpoint, ServerConfig, TransportConfig, V
 use rustls::{pki_types::PrivateKeyDer, RootCertStore};
 use serde::{Deserialize, Serialize};
 use tokio::task::JoinHandle;
-use tool_code::{lock::PointerPreNew, x509::x509_dns_name_from_cert_der};
+use tool_code::{lock::Pointer, x509::x509_dns_name_from_cert_der};
 use uuid::Uuid;
 
 pub use quinn::{RecvStream, SendStream};
@@ -56,7 +56,7 @@ impl PeerNode {
 pub struct Node {
     endpoint: Endpoint,
     info: NodeInfo,
-    peer_hubnode: PointerPreNew<PeerNode>,
+    peer_hubnode: Pointer<Option<PeerNode>>,
 }
 impl Node {
     pub fn new(
@@ -97,7 +97,7 @@ impl Node {
                 description: Arc::new(description.to_string()),
                 cert_der,
             },
-            peer_hubnode: PointerPreNew::new(),
+            peer_hubnode: Pointer::new(None),
         })
     }
     pub fn info(&self) -> NodeInfo {
@@ -170,7 +170,7 @@ impl Node {
         let (mut send, mut recv) = connection.open_bi().await?;
         send.write_all(&rmp_serde::to_vec(&self.info)?).await?;
         send.finish()?;
-        self.peer_hubnode.set(PeerNode::new(
+        *self.peer_hubnode.lock() = Some(PeerNode::new(
             connection,
             rmp_serde::from_slice(&recv.read_to_end(usize::MAX).await?)?,
         ));
