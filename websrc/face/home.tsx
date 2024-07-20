@@ -75,18 +75,14 @@ export default function Home() {
         try {
             const hubNodeInfoList = await invoke("get_hubnode_table") as {
                 base: {
-                    id: number,
                     name: string,
                     ipv4_address: string,
                     ipv6_address: string,
-                    cert_der: any,
                     description: string,
-                    logo: any,
                 }
                 cert_der: string,
                 logo: string,
             }[];
-            console.log(hubNodeInfoList[0]);
             createRoot(() => {
                 setSidebarHubNodeLogoButton(<>
                     {hubNodeInfoList.map((hubNodeInfo) => {

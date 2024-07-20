@@ -34,13 +34,11 @@ impl ToBase64 for HubNodeInfo {
     fn to_base64(&self) -> Self::Target {
         Self::Target {
             base: HubNodeInfo {
-                id: self.id,
                 name: self.name.clone(),
                 ipv4_address: self.ipv4_address.clone(),
                 ipv6_address: self.ipv6_address.clone(),
-                cert_der: Vec::new(),
                 description: self.description.clone(),
-                logo: Vec::new(),
+                ..Default::default()
             },
             logo: self.logo.to_base64(),
             cert_der: self.cert_der.to_base64(),

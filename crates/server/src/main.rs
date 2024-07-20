@@ -108,7 +108,7 @@ async fn handling_packet(
                 tracing::info!("[{}]获取中枢节点表", peer_node.remote_ip_address());
                 let mut db_conn = db_conn_pool.acquire().await.context("获取数据库连接失败")?;
                 let hubnodeinfo_list =
-                    sqlx::query_as::<_, HubNodeInfo>("SELECT * FROM HubNodeInfo")
+                    sqlx::query_as::<_, HubNodeInfo>("SELECT name,ipv4_address,ipv6_address,cert_der,description,logo FROM HubNodeInfo")
                         .fetch_all(&mut *db_conn)
                         .await
                         .context("从数据库查询所有中枢节点Logo失败")?;
