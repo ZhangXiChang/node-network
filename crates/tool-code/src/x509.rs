@@ -9,16 +9,25 @@ use x509_parser::{
 
 pub fn x509_dns_name_from_cert_der(cert_der: Arc<Vec<u8>>) -> Result<String> {
     let (_, x509certificate) = X509Certificate::from_der(&cert_der)?;
-    for x509extension in x509certificate.tbs_certificate.extensions() {
-        if let ParsedExtension::SubjectAlternativeName(subject_alternative_name) =
-            x509extension.parsed_extension()
-        {
-            for general_name in subject_alternative_name.general_names.iter() {
-                if let GeneralName::DNSName(dns_name) = general_name {
-                    return Ok(dns_name.to_string());
-                }
+    x509certificate
+        .tbs_certificate
+        .extensions()
+        .iter()
+        .find_map(|x509extension| {
+            if let ParsedExtension::SubjectAlternativeName(subject_alternative_name) =
+                x509extension.parsed_extension()
+            {
+                return subject_alternative_name
+                    .general_names
+                    .iter()
+                    .find_map(|general_name| {
+                        if let GeneralName::DNSName(dns_name) = general_name {
+                            return Some(dns_name.to_string());
+                        }
+                        None
+                    });
             }
-        }
-    }
-    Err(anyhow!("获取DNSName失败"))
+            None
+        })
+        .ok_or(anyhow!("没有找到DNSName"))
 }

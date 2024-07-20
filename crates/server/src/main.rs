@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use anyhow::{Context, Result};
-use db_types::HubNodeTable;
+use db_types::HubNodeInfo;
 use netprotocol::{
     node::{Node, PeerNode, RecvStream, SendStream},
     packet::Packet,
@@ -36,7 +36,7 @@ async fn main() -> Result<()> {
             key_der: Arc::new(KEY_DER.to_vec()),
         }),
     )
-    .context("创建节点服务端")?;
+    .context("创建节点服务端失败")?;
     tracing::info!("节点服务端初始化完成");
     //初始化数据库连接池
     let db_conn_pool = SqlitePool::connect("./assets/server/server.db")
@@ -107,11 +107,12 @@ async fn handling_packet(
             Packet::GetHubNodeTable => {
                 tracing::info!("[{}]获取中枢节点表", peer_node.remote_ip_address());
                 let mut db_conn = db_conn_pool.acquire().await.context("获取数据库连接失败")?;
-                let hubnode_table = sqlx::query_as::<_, HubNodeTable>("SELECT * FROM HubNode")
-                    .fetch_all(&mut *db_conn)
-                    .await
-                    .context("从数据库查询所有中枢节点Logo失败")?;
-                send.write_all(&rmp_serde::to_vec(&hubnode_table).context("编码数据包失败")?)
+                let hubnodeinfo_list =
+                    sqlx::query_as::<_, HubNodeInfo>("SELECT * FROM HubNodeInfo")
+                        .fetch_all(&mut *db_conn)
+                        .await
+                        .context("从数据库查询所有中枢节点Logo失败")?;
+                send.write_all(&rmp_serde::to_vec(&hubnodeinfo_list).context("编码数据包失败")?)
                     .await
                     .context("写入数据包失败")?;
                 send.finish().context("发送数据包失败")?;

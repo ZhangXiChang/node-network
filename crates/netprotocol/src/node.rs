@@ -1,6 +1,6 @@
 use std::{net::SocketAddr, sync::Arc, time::Duration};
 
-use anyhow::{anyhow, Context, Result};
+use anyhow::{anyhow, Result};
 use quinn::{ClientConfig, Connection, Endpoint, ServerConfig, TransportConfig, VarInt};
 use rustls::{pki_types::PrivateKeyDer, RootCertStore};
 use serde::{Deserialize, Serialize};
@@ -36,7 +36,7 @@ impl PeerNode {
         Ok(self.connection.accept_bi().await?)
     }
     pub async fn open_bi(&self) -> Result<(SendStream, RecvStream)> {
-        Ok(self.connection.open_bi().await.context("")?)
+        Ok(self.connection.open_bi().await?)
     }
     pub async fn accept_uni(&self) -> Result<RecvStream> {
         Ok(self.connection.accept_uni().await?)

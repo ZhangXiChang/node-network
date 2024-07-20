@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use sqlx::prelude::FromRow;
 
 #[derive(FromRow, Serialize, Deserialize)]
-pub struct HubNodeTable {
+pub struct HubNodeInfo {
     pub id: i32,
     pub name: String,
     pub ipv4_address: String,

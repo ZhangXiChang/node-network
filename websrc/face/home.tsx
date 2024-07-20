@@ -1,4 +1,4 @@
-//import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/tauri";
 import { createRoot, createSignal } from "solid-js";
 import { v4 as uuidv4 } from 'uuid';
 
@@ -73,10 +73,23 @@ export default function Home() {
     const discoverMenuButton = new ButtonGroup([homeButton]);
     (async () => {
         try {
-            const userStarHubNodeLogo = ["", ""];//await invoke("get_user_star_hubnode_logo") as string[];
+            const hubNodeInfoList = await invoke("get_hubnode_table") as {
+                base: {
+                    id: number,
+                    name: string,
+                    ipv4_address: string,
+                    ipv6_address: string,
+                    cert_der: any,
+                    description: string,
+                    logo: any,
+                }
+                cert_der: string,
+                logo: string,
+            }[];
+            console.log(hubNodeInfoList[0]);
             createRoot(() => {
                 setSidebarHubNodeLogoButton(<>
-                    {userStarHubNodeLogo.map((_) => {
+                    {hubNodeInfoList.map((hubNodeInfo) => {
                         const button = new Button({
                             base: "",
                             select: {
@@ -89,7 +102,7 @@ export default function Home() {
                             <div class={button.unselectedStyle()} id={button.id()} onclick={() => {
                                 rootMenuButton.select(button);
                             }}>
-                                <div class="i-line-md:compass-loop w-48px h-48px"></div>
+                                <img class="w-48px h-48px" src={"data:image/png;base64," + hubNodeInfo.logo} />
                             </div>
                         </div>)
                     })}

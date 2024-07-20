@@ -5,8 +5,8 @@ use node_network::system::System;
 use ratatui::{
     crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind},
     layout::{Constraint, Layout},
-    style::Style,
-    widgets::{Block, Borders, Row, Table, TableState},
+    style::{palette::tailwind, Style},
+    widgets::{Block, Borders, Cell, Row, Table, TableState},
     Frame,
 };
 use tool_code::lock::Pointer;
@@ -29,10 +29,20 @@ impl<'a> App<'a> {
             is_loop: Pointer::new(true),
             system,
             root_layout: Arc::new(Layout::vertical([Constraint::Min(0)])),
-            hubnode_table: Pointer::new(Table::new(
-                [Row::new(["1111", "2222", "3333"])],
-                [Constraint::Length(10)],
-            )),
+            hubnode_table: Pointer::new(
+                Table::new(
+                    [Row::new(["1111", "2222", "3333"])],
+                    [Constraint::Min(0), Constraint::Min(0), Constraint::Min(0)],
+                )
+                .header(
+                    ["ID", "名称", "地址"]
+                        .into_iter()
+                        .map(Cell::from)
+                        .collect::<Row>()
+                        .style(Style::new().fg(tailwind::SLATE.c200))
+                        .height(1),
+                ),
+            ),
             hubnode_table_state: Pointer::new(TableState::new()),
             textinput: Pointer::new({
                 let mut a = TextArea::default();
@@ -46,13 +56,15 @@ impl<'a> App<'a> {
         self.is_loop.lock().clone()
     }
     pub fn draw(&self, frame: &mut Frame) {
+        //TODO 消除System警告
+        let _ = self.system;
         let root_layout_area = self.root_layout.split(frame.size());
-        frame.render_widget(self.textinput.lock().widget(), root_layout_area[0]);
-        // frame.render_stateful_widget(
-        //     self.hubnode_table.lock().clone(),
-        //     root_layout_area[0],
-        //     &mut *self.hubnode_table_state.lock(),
-        // );
+        //frame.render_widget(self.textinput.lock().widget(), root_layout_area[0]);
+        frame.render_stateful_widget(
+            self.hubnode_table.lock().clone(),
+            root_layout_area[0],
+            &mut *self.hubnode_table_state.lock(),
+        );
     }
     pub fn handle_event(&self, event: Event) -> Result<()> {
         if let Event::Key(key) = event {

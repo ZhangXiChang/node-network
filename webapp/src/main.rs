@@ -2,9 +2,51 @@
 
 use anyhow::{anyhow, Result};
 use base64::{engine::general_purpose, Engine};
+use db_types::HubNodeInfo;
 use node_network::system::System;
+use serde::Serialize;
 use tauri::Manager;
 use window_shadows::set_shadow;
+
+trait ToBase64 {
+    type Target;
+
+    fn to_base64(&self) -> Self::Target;
+}
+
+impl ToBase64 for Vec<u8> {
+    type Target = String;
+
+    fn to_base64(&self) -> Self::Target {
+        general_purpose::STANDARD.encode(self)
+    }
+}
+
+#[derive(Serialize)]
+struct HubNodeInfoBase64 {
+    base: HubNodeInfo,
+    logo: String,
+    cert_der: String,
+}
+impl ToBase64 for HubNodeInfo {
+    type Target = HubNodeInfoBase64;
+
+    fn to_base64(&self) -> Self::Target {
+        Self::Target {
+            base: HubNodeInfo {
+                id: self.id,
+                name: self.name.clone(),
+                ipv4_address: self.ipv4_address.clone(),
+                ipv6_address: self.ipv6_address.clone(),
+                cert_der: Vec::new(),
+                description: self.description.clone(),
+                logo: Vec::new(),
+            },
+            logo: self.logo.to_base64(),
+            cert_der: self.cert_der.to_base64(),
+        }
+    }
+}
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -19,7 +61,7 @@ async fn main() -> Result<()> {
         .invoke_handler(tauri::generate_handler![
             open,
             connect_server,
-            get_user_star_hubnode_logo
+            get_hubnode_table
         ])
         .run(tauri::generate_context!())?;
     Ok(())
@@ -46,16 +88,16 @@ async fn connect_server<'a>(system: tauri::State<'a, System>) -> Result<(), Stri
 }
 
 #[tauri::command]
-async fn get_user_star_hubnode_logo<'a>(
+async fn get_hubnode_table<'a>(
     system: tauri::State<'a, System>,
-) -> Result<Vec<String>, String> {
+) -> Result<Vec<HubNodeInfoBase64>, String> {
     async move {
         anyhow::Ok(
             system
                 .get_hubnode_table()
                 .await?
                 .iter()
-                .map(|hubnode_table| general_purpose::STANDARD.encode(hubnode_table.logo.clone()))
+                .map(|hubnodeinfo| hubnodeinfo.to_base64())
                 .collect(),
         )
     }
