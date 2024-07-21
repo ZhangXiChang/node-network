@@ -1,57 +1,6 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import { createRoot, createSignal } from "solid-js";
-import { v4 as uuidv4 } from "uuid";
-
-interface SelectStyle {
-    ed: string;
-    un: string;
-}
-interface ButtonStyle {
-    base: string;
-    select: SelectStyle;
-}
-
-class Button {
-    private uuid: string;
-    private style: ButtonStyle;
-
-    constructor(style: ButtonStyle) {
-        this.uuid = uuidv4();
-        this.style = style;
-    }
-    id(): string {
-        return this.uuid;
-    }
-    selectedStyle(): string {
-        return this.style.base + " " + this.style.select.ed;
-    }
-    unselectedStyle(): string {
-        return this.style.base + " " + this.style.select.un;
-    }
-}
-class ButtonGroup {
-    private buttons: Button[];
-
-    constructor(buttons: Button[]) {
-        this.buttons = buttons;
-    }
-    add(button: Button) {
-        this.buttons.push(button);
-    }
-    select(targetButton: Button) {
-        const targetElement = document.getElementById(targetButton.id())!;
-        if (targetElement.className != targetButton.selectedStyle()) {
-            const otherElementList: Element[] = [];
-            this.buttons.map((button) => {
-                otherElementList.push(document.getElementById(button.id())!);
-            });
-            otherElementList.map((element, i) => {
-                element.className = this.buttons[i].unselectedStyle();
-            });
-            targetElement.className = targetButton.selectedStyle();
-        }
-    }
-}
+import { Button, ButtonGroup } from "../widgets/button";
 
 export default function Home() {
     const [sidebarHubNodeLogoButton, setSidebarHubNodeLogoButton] = createSignal(<></>);
@@ -60,11 +9,19 @@ export default function Home() {
         select: {
             ed: "bg-blue",
             un: "hover:cursor-pointer hover:bg-gray-3"
+        },
+        hover: {
+            ed: "bg-blue",
+            un: "hover:cursor-pointer hover:bg-gray-3"
         }
     });
     const homeButton = new Button({
         base: "w-95% h-40px pl-5% rounded flex items-center",
         select: {
+            ed: "bg-blue",
+            un: "hover:cursor-pointer hover:bg-gray-3"
+        },
+        hover: {
             ed: "bg-blue",
             un: "hover:cursor-pointer hover:bg-gray-3"
         }
@@ -91,6 +48,10 @@ export default function Home() {
                             select: {
                                 ed: "rounded bg-blue",
                                 un: "rounded-full hover:cursor-pointer hover:bg-gray-3"
+                            },
+                            hover: {
+                                ed: "bg-blue",
+                                un: "hover:cursor-pointer hover:bg-gray-3"
                             }
                         });
                         rootMenuButton.add(button);
@@ -98,7 +59,7 @@ export default function Home() {
                             <div class={button.unselectedStyle()} id={button.id()} onclick={() => {
                                 rootMenuButton.select(button);
                             }}>
-                                <img class="w-48px h-48px" src={"data:image/png;base64," + hubNodeInfo.logo} />
+                                <img width="48" height="48" src={"data:image/png;base64," + hubNodeInfo.logo} />
                             </div>
                         </div>)
                     })}
