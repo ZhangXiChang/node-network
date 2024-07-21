@@ -3,7 +3,7 @@ import Window from "./window";
 import "virtual:uno.css"
 import "./style.css"
 
-window.addEventListener("contextmenu", (e) => e.preventDefault());
-window.addEventListener("keydown", (e) => e.key != "F12" ? e.preventDefault() : null);
+window.oncontextmenu = (e) => e.preventDefault();
+window.onkeydown = (e) => e.key != "F12" ? e.preventDefault() : null;
 
 render(() => <Window />, document.body);
