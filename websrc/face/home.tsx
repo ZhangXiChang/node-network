@@ -1,36 +1,26 @@
 import { invoke } from "@tauri-apps/api/tauri";
-import { createRoot, createSignal } from "solid-js";
-import { Button, ButtonGroup } from "../widgets/button";
+import { createSignal } from "solid-js";
+import { Button, ButtonNavigation } from "../widgets/button/mod";
+import { ImageButton } from "../widgets/button/image-button";
 
 export default function Home() {
     const [sidebarHubNodeLogoButton, setSidebarHubNodeLogoButton] = createSignal(<></>);
     const discoverButton = new Button({
         base: "rounded",
-        select: {
-            ed: "bg-blue",
-            un: "hover:cursor-pointer hover:bg-gray-3"
-        },
-        hover: {
-            ed: "bg-blue",
-            un: "hover:cursor-pointer hover:bg-gray-3"
-        }
+        selected: "bg-blue",
+        hovered: "cursor-pointer bg-gray-3"
     });
+    discoverButton.setStyleToSelected();
     const homeButton = new Button({
-        base: "w-95% h-40px pl-5% rounded flex items-center",
-        select: {
-            ed: "bg-blue",
-            un: "hover:cursor-pointer hover:bg-gray-3"
-        },
-        hover: {
-            ed: "bg-blue",
-            un: "hover:cursor-pointer hover:bg-gray-3"
-        }
+        base: "rounded",
+        selected: "bg-blue",
+        hovered: "cursor-pointer bg-gray-3"
     });
-    const rootMenuButton = new ButtonGroup([discoverButton]);
-    const discoverMenuButton = new ButtonGroup([homeButton]);
+    homeButton.setStyleToSelected();
+    const rootButtonNavigation = new ButtonNavigation([discoverButton]);
     (async () => {
         try {
-            const hubNodeInfoList = await invoke("get_hubnode_table") as {
+            const hubnodeTable = await invoke("get_hubnode_table") as {
                 base: {
                     name: string,
                     ipv4_address: string,
@@ -40,45 +30,25 @@ export default function Home() {
                 cert_der: string,
                 logo: string,
             }[];
-            createRoot(() => {
-                setSidebarHubNodeLogoButton(<>
-                    {hubNodeInfoList.map((hubNodeInfo) => {
-                        const button = new Button({
-                            base: "",
-                            select: {
-                                ed: "rounded bg-blue",
-                                un: "rounded-full hover:cursor-pointer hover:bg-gray-3"
-                            },
-                            hover: {
-                                ed: "bg-blue",
-                                un: "hover:cursor-pointer hover:bg-gray-3"
-                            }
-                        });
-                        rootMenuButton.add(button);
-                        return (<div class="py-4px flex justify-center items-center">
-                            <div class={button.unselectedStyle()} id={button.id()} onclick={() => {
-                                rootMenuButton.select(button);
-                            }}>
-                                <img width="48" height="48" src={"data:image/png;base64," + hubNodeInfo.logo} />
-                            </div>
-                        </div>)
-                    })}
-                </>)
-            });
-        } catch (err: any) {
-            createRoot(() => { setSidebarHubNodeLogoButton(<>{err}</>) });
+            setSidebarHubNodeLogoButton(hubnodeTable.map((hubnodeInfo) => {
+                const hubnodeLogoButton = new ImageButton({
+                    base: "rounded",
+                    selected: "bg-blue",
+                    hovered: "cursor-pointer bg-gray-3"
+                }, "data:image/png;base64," + hubnodeInfo.logo, 48, 48);
+                rootButtonNavigation.addButton(hubnodeLogoButton);
+                return hubnodeLogoButton.html();
+            }))
+        } catch (err) {
+            console.log(err);
         }
     })();
     return (<>
         <div class="w-70px flex flex-col">
             <div class="py-4px flex justify-center items-center">
-                <div class={discoverButton.selectedStyle()} id={discoverButton.id()} onclick={() => {
-                    rootMenuButton.select(discoverButton);
-                }}>
-                    <div class="i-line-md:compass-loop w-48px h-48px"></div>
-                </div>
+                {discoverButton.html(<div class="i-line-md:compass-loop w-48px h-48px"></div>)}
             </div>
-            <div class="flex flex-col">
+            <div class="flex flex-col items-center">
                 {sidebarHubNodeLogoButton()}
             </div>
         </div>
@@ -87,11 +57,7 @@ export default function Home() {
                 <label class="font-bold text-size-2xl">发现</label>
             </div>
             <div class="flex flex-col items-center">
-                <div class={homeButton.selectedStyle()} id={homeButton.id()} onclick={() => {
-                    discoverMenuButton.select(homeButton);
-                }}>
-                    <label>主页</label>
-                </div>
+                {homeButton.html(<label>主页</label>)}
             </div>
         </div>
         <div class="flex-1 px-20px pt-20px bg-white flex flex-col items-center">

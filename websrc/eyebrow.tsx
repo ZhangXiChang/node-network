@@ -13,7 +13,7 @@ export default function Eyebrow() {
         );
     };
     const openGithub = () => invoke("open", { path: "https://github.com/ZhangXiChang/node-network" });
-    return (<div class="h-32px pl-2px pr-4px flex">
+    return <div class="h-32px pl-2px pr-4px flex">
         <div class="flex justify-center items-center" data-tauri-drag-region>
             <div class="mx-4px rounded hover:cursor-pointer hover:bg-gray-3" onclick={openGithub}>
                 <div class="i-line-md:github-loop w-24px h-24px"></div>
@@ -33,5 +33,5 @@ export default function Eyebrow() {
                 <div class="i-mdi:window-close w-16px h-16px"></div>
             </div>
         </div>
-    </div>);
+    </div>;
 }
