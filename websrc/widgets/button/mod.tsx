@@ -7,12 +7,12 @@ export interface ButtonStyle {
 }
 
 export class Button extends Widget {
-    private style: ButtonStyle;
+    private buttonStyle: ButtonStyle;
 
     constructor(style: ButtonStyle, tag: string = "div") {
-        super(tag)
-        this.style = style;
-        this.element.className = this.style.base;
+        super(tag);
+        this.buttonStyle = style;
+        this.element.className = this.baseStyle();
         this.addClickEvent(() => {
             if (!this.isSelectedStyle()) {
                 this.setStyleToSelected();
@@ -27,27 +27,47 @@ export class Button extends Widget {
     addClickEvent(onClick: (e: MouseEvent) => void) {
         this.element.addEventListener("click", onClick);
     }
+    withClickEvent(onClick: (e: MouseEvent) => void) {
+        this.addClickEvent(onClick);
+        return this;
+    }
     addHoverEvent(onHover: (e: MouseEvent, isHovered: boolean) => void) {
         this.element.addEventListener("mouseenter", (e) => onHover(e, true));
         this.element.addEventListener("mouseleave", (e) => onHover(e, false));
     }
+    withHoverEvent(onHover: (e: MouseEvent, isHovered: boolean) => void) {
+        this.addHoverEvent(onHover);
+        return this;
+    }
     baseStyle() {
-        return this.style.base;
+        return "flex justify-center items-center" + " " + this.buttonStyle.base;
     }
     hoveredStyle() {
-        return this.baseStyle() + " " + this.style.hovered;
+        return this.baseStyle() + " " + this.buttonStyle.hovered;
     }
     selectedStyle() {
-        return this.baseStyle() + " " + this.style.selected;
+        return this.baseStyle() + " " + this.buttonStyle.selected;
     }
     setStyleToBase() {
         this.element.className = this.baseStyle();
     }
+    withStyleToBase() {
+        this.setStyleToBase();
+        return this;
+    }
     setStyleToHovered() {
         this.element.className = this.hoveredStyle();
     }
+    withStyleToHovered() {
+        this.setStyleToHovered();
+        return this;
+    }
     setStyleToSelected() {
         this.element.className = this.selectedStyle();
+    }
+    withStyleToSelected() {
+        this.setStyleToSelected();
+        return this;
     }
     isBaseStyle() {
         return this.element.className == this.baseStyle();
@@ -60,26 +80,12 @@ export class Button extends Widget {
     }
 }
 
-export class ButtonNavigation {
-    private buttons: Button[];
-
-    constructor(buttons: Button[] = []) {
-        this.buttons = buttons;
-        this.buttons.forEach((button) => {
-            button.addClickEvent(() => this.setOtherButtonStyleToBase(button));
-        });
-    }
-    setOtherButtonStyleToBase(button: Button) {
-        this.buttons.forEach((allbutton) => {
-            if (allbutton != button) {
-                if (allbutton.isSelectedStyle()) {
-                    allbutton.setStyleToBase();
-                }
+export function buttonNavigation(buttons: Button[]) {
+    buttons.forEach((selfButton) => selfButton.addClickEvent(() => buttons.forEach((button) => {
+        if (button != selfButton) {
+            if (button.isSelectedStyle()) {
+                button.setStyleToBase();
             }
-        });
-    }
-    addButton(button: Button) {
-        this.buttons.push(button);
-        button.addClickEvent(() => this.setOtherButtonStyleToBase(button))
-    }
+        }
+    })));
 }
