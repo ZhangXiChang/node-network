@@ -1,4 +1,4 @@
-//import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/tauri";
 import { createSignal } from "solid-js";
 import { Button, buttonNavigation } from "../widgets/button/mod";
 import { ImageButton } from "../widgets/button/image-button";
@@ -18,7 +18,7 @@ export default function Home() {
     const rootButtonNavigation = [discoverButton];
     (async () => {
         try {
-            const hubnodeTable = [{ logo: "" }, { logo: "" }, { logo: "" }, { logo: "" }];
+            const hubnodeTable = await invoke("get_hubnode_table") as { logo: string }[];
             setSidebarHubNodeLogoButton(hubnodeTable.map((hubnodeInfo) => {
                 const hubnodeLogoButton = new ImageButton({
                     base: "rounded",
@@ -30,10 +30,10 @@ export default function Home() {
                     {hubnodeLogoButton.html()}
                 </div>;
             }));
-            buttonNavigation(rootButtonNavigation);
         } catch (err) {
             console.log(err);
         }
+        buttonNavigation(rootButtonNavigation);
     })();
     return (<>
         <div class="w-70px flex flex-col items-center">
