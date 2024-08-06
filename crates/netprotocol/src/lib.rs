@@ -64,6 +64,12 @@ mod tests {
                 }
             }
         });
+        connect_handling(
+            "127.0.0.1:10270".parse()?,
+            client_node.clone(),
+            server_node.clone(),
+        )
+        .await?;
         connect_handling("[::1]:10270".parse()?, client_node, server_node).await?;
         Ok(())
     }
