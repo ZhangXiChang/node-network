@@ -28,12 +28,7 @@ impl Terminal {
     pub async fn run(mut self) -> Result<()> {
         let app = App::new().await?;
         while app.is_loop() {
-            self.terminal.draw({
-                let app = app.clone();
-                move |frame| {
-                    app.draw(frame);
-                }
-            })?;
+            self.terminal.draw(|frame| app.draw(frame))?;
             if event::poll(Duration::from_millis(16))? {
                 app.handle_event(event::read()?)?;
             }

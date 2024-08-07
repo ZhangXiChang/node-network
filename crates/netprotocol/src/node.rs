@@ -27,22 +27,19 @@ pub struct NodeInfo {
 
 pub struct IPAddress {
     pub ipv4_address: SocketAddr,
-    pub ipv6_address: Option<SocketAddr>,
+    pub ipv6_address: SocketAddr,
 }
 impl IPAddress {
     pub fn new(port: u16) -> Self {
         Self {
             ipv4_address: SocketAddr::new(IpAddr::V4(Ipv4Addr::UNSPECIFIED), port),
-            ipv6_address: Some(SocketAddr::new(IpAddr::V6(Ipv6Addr::UNSPECIFIED), port)),
+            ipv6_address: SocketAddr::new(IpAddr::V6(Ipv6Addr::UNSPECIFIED), port),
         }
     }
 }
 impl Default for IPAddress {
     fn default() -> Self {
-        Self {
-            ipv4_address: SocketAddr::new(IpAddr::V4(Ipv4Addr::UNSPECIFIED), 0),
-            ipv6_address: None,
-        }
+        Self::new(0)
     }
 }
 

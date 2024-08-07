@@ -1,7 +1,11 @@
 use serde::{Deserialize, Serialize};
-use sqlx::prelude::FromRow;
 
-#[derive(FromRow, Serialize, Deserialize, Default)]
+#[derive(Serialize, Deserialize)]
+pub enum Packet {
+    GetHubNodeInfoList,
+}
+
+#[derive(Serialize, Deserialize)]
 pub struct HubNodeInfo {
     pub name: String,
     pub ipv4_address: String,
