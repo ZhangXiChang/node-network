@@ -8,9 +8,8 @@ pub enum Packet {
 #[derive(Serialize, Deserialize)]
 pub struct HubNodeInfo {
     pub name: String,
-    pub ipv4_address: String,
-    pub ipv6_address: String,
-    pub cert_der: Vec<u8>,
     pub description: String,
+    pub ipv4_addr: String,
+    pub cert_der: Vec<u8>,
     pub logo: Vec<u8>,
 }

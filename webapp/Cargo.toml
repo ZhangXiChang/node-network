@@ -10,8 +10,6 @@ tauri-build = { version = "1.5.2", features = [] } #Tauri构建脚本
 custom-protocol = ["tauri/custom-protocol"] #在生产环境不要删除
 
 [dependencies]
-node-network = { path = "../" }
-
 anyhow = "1.0.86"                                   #错误处理
 tokio = { version = "1.38.0", features = ["full"] } #异步运行时
 

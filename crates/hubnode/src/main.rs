@@ -7,8 +7,8 @@ use rustls::pki_types::PrivateKeyDer;
 use tool_code::lock::Pointer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-const CERT_DER: &[u8] = include_bytes!("../../../assets/hubnode/.cer");
-const KEY_DER: &[u8] = include_bytes!("../../../assets/hubnode/.key");
+const CERT_DER: &[u8] = include_bytes!("../../../assets/hubnode.cer");
+const KEY_DER: &[u8] = include_bytes!("../../../assets/hubnode.key");
 
 #[derive(Clone)]
 struct App {
@@ -60,9 +60,6 @@ impl App {
                 });
             }
         }
-    }
-    fn quit(&self) {
-        *self.is_loop.lock() = false;
     }
     async fn connection_handling(&self, connection: Connection) -> Result<()> {
         loop {
