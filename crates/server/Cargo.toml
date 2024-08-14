@@ -14,6 +14,6 @@ tracing-subscriber = "0.3.18" #日志消费者
 
 quinn = "0.11.3" #QUIC协议
 
-serde = { version = "1.0.204", features = ["derive"] } #编解码特性
+serde = { version = "1.0.207", features = ["derive"] } #编解码特性
 
 sqlx = { version = "0.8.0", features = ["runtime-tokio", "sqlite"] } #数据库交互

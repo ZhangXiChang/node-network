@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 tool-code = { path = "../tool-code" }
 server = { path = "../server" }
+hubnode = { path = "../hubnode" }
 
 anyhow = "1.0.86"                                   #错误处理
 tokio = { version = "1.39.2", features = ["full"] } #异步运行时
@@ -16,4 +17,4 @@ uuid = { version = "1.10.0", features = ["v4"] } #通用唯一标识符
 hickory-resolver = "0.24.1"                      #DNS解析器
 
 ratatui = "0.28.0"     #TUI库
-tui-textarea = "0.6.0" #TUI文本框库
+tui-textarea = "0.6.1" #TUI文本框库

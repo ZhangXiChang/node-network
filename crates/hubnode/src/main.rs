@@ -1,10 +1,7 @@
-use std::{sync::Arc, time::Duration};
-
 use anyhow::{anyhow, Result};
 use hubnode::Packet;
-use quinn::{Connection, ConnectionError, Endpoint, ServerConfig, TransportConfig};
-use rustls::pki_types::PrivateKeyDer;
-use tool_code::lock::Pointer;
+use quinn::{Connection, ConnectionError, Endpoint};
+use tool_code::{lock::Pointer, quinn::Extension, rmp_serde::MessagePack};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 const CERT_DER: &[u8] = include_bytes!("../../../assets/hubnode.cer");
@@ -18,18 +15,13 @@ struct App {
 }
 impl App {
     fn new() -> Result<Self> {
-        let mut endpoint_config = ServerConfig::with_single_cert(
-            vec![CERT_DER.into()],
-            PrivateKeyDer::Pkcs8(KEY_DER.into()),
-        )?;
-        endpoint_config.transport_config(Arc::new({
-            let mut a = TransportConfig::default();
-            a.keep_alive_interval(Some(Duration::from_secs(5)));
-            a
-        }));
         Ok(Self {
             is_loop: Pointer::new(true),
-            endpoint: Endpoint::server(endpoint_config, "0.0.0.0:10271".parse()?)?,
+            endpoint: Endpoint::new_ext(
+                "0.0.0.0:10271".parse()?,
+                CERT_DER.to_vec(),
+                KEY_DER.to_vec(),
+            )?,
             conn_list: Pointer::new(Vec::new()),
         })
     }
@@ -64,11 +56,9 @@ impl App {
     async fn connection_handling(&self, connection: Connection) -> Result<()> {
         loop {
             match connection.accept_bi().await {
-                Ok((_, mut recv)) => {
-                    match rmp_serde::from_slice::<Packet>(&recv.read_to_end(usize::MAX).await?)? {
-                        Packet::Test => tracing::info!("测试"),
-                    }
-                }
+                Ok((_, mut recv)) => match Vec::decode(&recv.read_to_end(usize::MAX).await?)? {
+                    Packet::Test => tracing::info!("测试"),
+                },
                 Err(err) => match err {
                     ConnectionError::ApplicationClosed(closed_info) => {
                         tracing::info!("对方连接关闭，信息: {}", closed_info);
@@ -93,7 +83,7 @@ async fn main() -> Result<()> {
         .init();
     tracing::info!("日志系统初始化完成");
     let app = App::new()?;
-    tracing::info!("应用程序初始化完毕，开始运行");
+    tracing::info!("应用程序初始化完毕");
     app.run().await;
     Ok(())
 }

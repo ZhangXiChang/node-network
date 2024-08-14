@@ -1,8 +1,8 @@
 use std::net::SocketAddr;
 
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use quinn::{Connection, Endpoint};
-use server::{HubNodeInfo, Packet};
+use server::HubNodeInfo;
 use tool_code::{lock::Pointer, quinn::Extension, rmp_serde::MessagePack};
 use uuid::Uuid;
 
@@ -32,9 +32,27 @@ impl Node {
     }
     pub async fn get_hubnode_info_list(&self) -> Result<Vec<HubNodeInfo>> {
         let (mut send, mut recv) = self.server_conn.open_bi().await?;
-        send.write_all(&Vec::encode(&Packet::GetHubNodeInfoList)?)
+        send.write_all(&Vec::encode(&server::Packet::GetHubNodeInfoList)?)
             .await?;
         send.finish()?;
         Ok(recv.read_to_end(usize::MAX).await?.decode()?)
+    }
+    pub async fn connect_hubnode(&self, ip_addr: SocketAddr, cert_der: Vec<u8>) -> Result<()> {
+        *self.hubnode_conn.lock() =
+            Some(self.endpoint.connect_ext(ip_addr, cert_der).await?.await?);
+        Ok(())
+    }
+    pub async fn test_hubnode(&self) -> Result<()> {
+        let (mut send, _) = self
+            .hubnode_conn
+            .lock()
+            .as_ref()
+            .ok_or(anyhow!("中枢节点没有连接"))?
+            .open_bi()
+            .await?;
+        send.write_all(&Vec::encode(&hubnode::Packet::Test)?)
+            .await?;
+        send.finish()?;
+        Ok(())
     }
 }

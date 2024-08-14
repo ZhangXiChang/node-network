@@ -62,21 +62,20 @@ impl App {
                 Ok((mut send, mut recv)) => match recv.read_to_end(usize::MAX).await?.decode()? {
                     Packet::GetHubNodeInfoList => {
                         let mut db_conn = self.db_conn_pool.acquire().await?;
-                        send.write_all(&Vec::encode(
-                            &sqlx::query("SELECT * FROM HubNodeInfo")
-                                .fetch_all(&mut *db_conn)
-                                .await?
-                                .iter()
-                                .map(|row| HubNodeInfo {
-                                    name: row.get("name"),
-                                    description: row.get("description"),
-                                    ipv4_addr: row.get("ipv4_addr"),
-                                    cert_der: row.get("cert_der"),
-                                    logo: row.get("logo"),
-                                })
-                                .collect::<Vec<_>>(),
-                        )?)
-                        .await?;
+                        let mut hubnode_info_list = Vec::new();
+                        for row in sqlx::query("SELECT * FROM HubNodeInfo")
+                            .fetch_all(&mut *db_conn)
+                            .await?
+                        {
+                            hubnode_info_list.push(HubNodeInfo {
+                                name: row.get("name"),
+                                description: row.get("description"),
+                                ipv4_addr: row.get::<String, _>("ipv4_addr").parse()?,
+                                cert_der: row.get("cert_der"),
+                                logo: row.get("logo"),
+                            });
+                        }
+                        send.write_all(&Vec::encode(&hubnode_info_list)?).await?;
                         send.finish()?;
                     }
                 },
