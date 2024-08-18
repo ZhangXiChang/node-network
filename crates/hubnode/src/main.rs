@@ -2,7 +2,7 @@ use anyhow::{anyhow, Result};
 use quinn::{Connection, ConnectionError, Endpoint};
 use tool_code::{
     lock::Pointer,
-    packet::{NodeConnectInfo, NodeInfo, Packet},
+    packet::{NodeInfo, Packet},
     quinn::Extension,
     rmp_serde::MessagePack,
 };
@@ -77,10 +77,7 @@ impl App {
                                 .node_list
                                 .lock()
                                 .iter()
-                                .map(|node| NodeConnectInfo {
-                                    info: node.info.clone(),
-                                    ip_addr: node.connection.remote_address(),
-                                })
+                                .map(|node| node.info.clone())
                                 .collect::<Vec<_>>();
                             send.write_all(&Vec::encode(&node_info_list)?).await?;
                             send.finish()?;

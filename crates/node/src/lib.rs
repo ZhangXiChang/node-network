@@ -3,7 +3,7 @@ use std::net::SocketAddr;
 use anyhow::Result;
 use quinn::{Connection, Endpoint};
 use tool_code::{
-    packet::{NodeConnectInfo, NodeInfo, Packet},
+    packet::{NodeInfo, Packet},
     quinn::Extension,
     rmp_serde::MessagePack,
 };
@@ -40,11 +40,14 @@ impl Node {
             hubnode_conn,
         })
     }
-    pub async fn get_node_info_list(&self) -> Result<Vec<NodeConnectInfo>> {
+    pub async fn get_node_info_list(&self) -> Result<Vec<NodeInfo>> {
         let (mut send, mut recv) = self.hubnode_conn.open_bi().await?;
         send.write_all(&Vec::encode(&Packet::GetNodeInfoList)?)
             .await?;
         send.finish()?;
         Ok(recv.read_to_end(usize::MAX).await?.decode()?)
+    }
+    pub fn qwdqdqw(&self) {
+        let _ = &self.endpoint;
     }
 }

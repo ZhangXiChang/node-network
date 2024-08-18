@@ -13,42 +13,55 @@ use ratatui::{
     },
     layout::{Constraint, Layout},
     prelude::CrosstermBackend,
-    widgets::Paragraph,
+    style::{Color, Style},
+    widgets::{Row, Table, TableState},
     Frame,
 };
-use tool_code::lock::Pointer;
+use tool_code::packet::NodeInfo;
 
 const HUBNODE_CERT_DER: &[u8] = include_bytes!("../../../assets/hubnode.cer");
 
 #[derive(Clone)]
 struct App {
-    is_loop: Pointer<bool>,
+    is_loop: bool,
     node: Node,
-    print_str: String,
+    node_info_list: Vec<NodeInfo>,
+    node_info_table_state: TableState,
 }
 impl App {
     async fn new() -> Result<Self> {
         Ok(Self {
-            is_loop: Pointer::new(true),
+            is_loop: true,
             node: Node::new("127.0.0.1:10270".parse()?, HUBNODE_CERT_DER.to_vec()).await?,
-            print_str: String::new(),
+            node_info_list: Vec::new(),
+            node_info_table_state: TableState::new(),
         })
     }
-    fn quit(&self) {
-        *self.is_loop.lock() = false;
+    fn quit(&mut self) {
+        self.is_loop = false;
     }
     async fn start(&mut self) -> Result<()> {
-        let node_info_list = self.node.get_node_info_list().await?;
-        for node_info in node_info_list {
-            self.print_str = format!("{}[{}]", self.print_str, node_info.info.name);
-        }
+        self.node_info_list = self.node.get_node_info_list().await?;
         Ok(())
     }
-    fn draw(&self, frame: &mut Frame) {
-        let [text_area] = Layout::vertical([Constraint::Min(0)]).areas(frame.area());
-        frame.render_widget(Paragraph::new(self.print_str.clone()), text_area);
+    fn draw(&mut self, frame: &mut Frame) {
+        let [node_info_table_area] = Layout::vertical([Constraint::Min(0)]).areas(frame.area());
+        frame.render_stateful_widget(
+            Table::new(
+                self.node_info_list
+                    .iter()
+                    .map(|node_info| {
+                        Row::new([node_info.name.clone(), node_info.description.clone()])
+                    })
+                    .collect::<Vec<_>>(),
+                [Constraint::Min(0), Constraint::Min(0)],
+            )
+            .header(Row::new(["名称", "描述"]).style(Style::new().fg(Color::Gray))),
+            node_info_table_area,
+            &mut self.node_info_table_state,
+        );
     }
-    fn event(&self, event: Event) -> Result<()> {
+    fn event(&mut self, event: Event) -> Result<()> {
         if let Event::Key(key) = event {
             if key.kind == KeyEventKind::Press {
                 if key.code == KeyCode::Esc {
@@ -75,7 +88,7 @@ impl Terminal {
     }
     async fn run(&mut self) -> Result<()> {
         self.app.start().await?;
-        while *self.app.is_loop.lock() {
+        while self.app.is_loop {
             self.terminal.draw(|frame| self.app.draw(frame))?;
             if event::poll(Duration::from_millis(16))? {
                 self.app.event(event::read()?)?;
