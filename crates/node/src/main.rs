@@ -1,6 +1,5 @@
 use std::{
     io::{stdout, Stdout},
-    sync::Arc,
     time::Duration,
 };
 
@@ -14,42 +13,40 @@ use ratatui::{
     },
     layout::{Constraint, Layout},
     prelude::CrosstermBackend,
+    widgets::Paragraph,
     Frame,
 };
 use tool_code::lock::Pointer;
 
-const SERVER_CERT_DER: &[u8] = include_bytes!("../../../assets/server.cer");
+const HUBNODE_CERT_DER: &[u8] = include_bytes!("../../../assets/hubnode.cer");
 
 #[derive(Clone)]
 struct App {
     is_loop: Pointer<bool>,
     node: Node,
-    root_layout: Arc<Layout>,
+    print_str: String,
 }
 impl App {
     async fn new() -> Result<Self> {
         Ok(Self {
             is_loop: Pointer::new(true),
-            node: Node::new("127.0.0.1:10270".parse()?, SERVER_CERT_DER.to_vec()).await?,
-            root_layout: Arc::new(Layout::vertical([Constraint::Min(0)])),
+            node: Node::new("127.0.0.1:10270".parse()?, HUBNODE_CERT_DER.to_vec()).await?,
+            print_str: String::new(),
         })
     }
     fn quit(&self) {
         *self.is_loop.lock() = false;
     }
-    async fn start(&self) -> Result<()> {
-        let hubnode_info_list = self.node.get_hubnode_info_list().await?;
-        self.node
-            .connect_hubnode(
-                hubnode_info_list[0].ipv4_addr,
-                hubnode_info_list[0].cert_der.clone(),
-            )
-            .await?;
-        self.node.test_hubnode().await?;
+    async fn start(&mut self) -> Result<()> {
+        let node_info_list = self.node.get_node_info_list().await?;
+        for node_info in node_info_list {
+            self.print_str = format!("{}[{}]", self.print_str, node_info.info.name);
+        }
         Ok(())
     }
     fn draw(&self, frame: &mut Frame) {
-        let _root_layout_area = self.root_layout.split(frame.area());
+        let [text_area] = Layout::vertical([Constraint::Min(0)]).areas(frame.area());
+        frame.render_widget(Paragraph::new(self.print_str.clone()), text_area);
     }
     fn event(&self, event: Event) -> Result<()> {
         if let Event::Key(key) = event {

@@ -1,58 +1,50 @@
 use std::net::SocketAddr;
 
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use quinn::{Connection, Endpoint};
-use server::HubNodeInfo;
-use tool_code::{lock::Pointer, quinn::Extension, rmp_serde::MessagePack};
+use tool_code::{
+    packet::{NodeConnectInfo, NodeInfo, Packet},
+    quinn::Extension,
+    rmp_serde::MessagePack,
+};
 use uuid::Uuid;
 
 #[derive(Clone)]
 pub struct Node {
     endpoint: Endpoint,
-    server_conn: Connection,
-    hubnode_conn: Pointer<Option<Connection>>,
+    hubnode_conn: Connection,
 }
 impl Node {
-    pub async fn new(server_ip_addr: SocketAddr, server_cert_der: Vec<u8>) -> Result<Self> {
-        let rcgen::CertifiedKey { cert, key_pair } =
-            rcgen::generate_simple_self_signed(vec![Uuid::new_v4().to_string()])?;
+    pub async fn new(hubnode_ip_addr: SocketAddr, hubnode_cert_der: Vec<u8>) -> Result<Self> {
+        let cert_key = rcgen::generate_simple_self_signed(vec![Uuid::new_v4().to_string()])?;
+        let cert_der = cert_key.key_pair.serialize_der();
         let endpoint = Endpoint::new_ext(
             "0.0.0.0:0".parse()?,
-            cert.der().to_vec(),
-            key_pair.serialize_der(),
+            cert_key.cert.der().to_vec(),
+            cert_der.clone(),
         )?;
+        let hubnode_conn = endpoint
+            .connect_ext(hubnode_ip_addr, hubnode_cert_der)
+            .await?
+            .await?;
+        let mut send = hubnode_conn.open_uni().await?;
+        send.write_all(&Vec::encode(&NodeInfo {
+            name: "北方酱".to_string(),
+            description: "测试节点描述".to_string(),
+            cert_der,
+        })?)
+        .await?;
+        send.finish()?;
         Ok(Self {
-            endpoint: endpoint.clone(),
-            server_conn: endpoint
-                .connect_ext(server_ip_addr, server_cert_der)
-                .await?
-                .await?,
-            hubnode_conn: Pointer::new(None),
+            endpoint,
+            hubnode_conn,
         })
     }
-    pub async fn get_hubnode_info_list(&self) -> Result<Vec<HubNodeInfo>> {
-        let (mut send, mut recv) = self.server_conn.open_bi().await?;
-        send.write_all(&Vec::encode(&server::Packet::GetHubNodeInfoList)?)
+    pub async fn get_node_info_list(&self) -> Result<Vec<NodeConnectInfo>> {
+        let (mut send, mut recv) = self.hubnode_conn.open_bi().await?;
+        send.write_all(&Vec::encode(&Packet::GetNodeInfoList)?)
             .await?;
         send.finish()?;
         Ok(recv.read_to_end(usize::MAX).await?.decode()?)
-    }
-    pub async fn connect_hubnode(&self, ip_addr: SocketAddr, cert_der: Vec<u8>) -> Result<()> {
-        *self.hubnode_conn.lock() =
-            Some(self.endpoint.connect_ext(ip_addr, cert_der).await?.await?);
-        Ok(())
-    }
-    pub async fn test_hubnode(&self) -> Result<()> {
-        let (mut send, _) = self
-            .hubnode_conn
-            .lock()
-            .as_ref()
-            .ok_or(anyhow!("中枢节点没有连接"))?
-            .open_bi()
-            .await?;
-        send.write_all(&Vec::encode(&hubnode::Packet::Test)?)
-            .await?;
-        send.finish()?;
-        Ok(())
     }
 }
