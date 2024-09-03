@@ -6,7 +6,7 @@ use quinn::{
     ClientConfig, Connecting, Endpoint, ServerConfig, TransportConfig,
 };
 
-use crate::x509::CertDer;
+use super::x509_parser::CertDer;
 
 pub trait Extension
 where

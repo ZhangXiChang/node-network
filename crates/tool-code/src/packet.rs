@@ -14,6 +14,7 @@ pub struct NodeInfo {
     pub cert_der: Vec<u8>,
 }
 
+#[derive(Serialize, Deserialize)]
 pub struct NodeConnectInfo {
     pub node_info: NodeInfo,
     pub socket_addr: SocketAddr,

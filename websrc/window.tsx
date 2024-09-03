@@ -1,9 +1,7 @@
-import Eyebrow from "./eyebrow";
-import Face from "./face/mod";
+import { Button } from "@suid/material";
 
 export default function Window() {
-    return <div class="flex-1 flex flex-col bg-gray-1">
-        <Eyebrow />
-        <Face />
-    </div>;
-};
+    return <div class="Window">
+        <Button>你好，世界</Button>
+    </div>
+}

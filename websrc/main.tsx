@@ -1,9 +1,8 @@
-import { render } from "solid-js/web";
-import Window from "./window";
-import "virtual:uno.css"
+import { render } from "solid-js/web"
+import Window from "./window"
 import "./style.css"
 
-window.addEventListener("contextmenu", (e) => e.preventDefault());
-window.addEventListener("keydown", (e) => e.key != "F12" ? e.preventDefault() : null);
+window.addEventListener("contextmenu", (e) => e.preventDefault())
+window.addEventListener("keydown", (e) => e.key != "F12" ? e.preventDefault() : null)
 
-render(() => <Window />, document.body);
+render(() => <Window />, document.body)

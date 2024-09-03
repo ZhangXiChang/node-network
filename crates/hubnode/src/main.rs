@@ -49,7 +49,7 @@ impl App {
                                         .await?
                                         .read_to_end(usize::MAX)
                                         .await?
-                                        .decode::<NodeInfo>()?;
+                                        .message_pack_to::<NodeInfo>()?;
                                     self_handle.node_list.lock().push(PeerNode {
                                         connection: connection.clone(),
                                         info: node_info,
@@ -84,7 +84,11 @@ impl App {
         loop {
             match connection.accept_bi().await {
                 Ok((mut send, mut recv)) => {
-                    match Vec::decode(&recv.read_to_end(usize::MAX).await?)? {
+                    match recv
+                        .read_to_end(usize::MAX)
+                        .await?
+                        .message_pack_to::<Packet>()?
+                    {
                         Packet::GetNodeInfoList => {
                             let node_info_list = self
                                 .node_list
@@ -92,7 +96,8 @@ impl App {
                                 .iter()
                                 .map(|node| node.info.clone())
                                 .collect::<Vec<_>>();
-                            send.write_all(&Vec::encode(&node_info_list)?).await?;
+                            send.write_all(&Vec::message_pack_from(&node_info_list)?)
+                                .await?;
                             send.finish()?;
                         }
                     }

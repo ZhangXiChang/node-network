@@ -27,7 +27,7 @@ impl Node {
             .await?
             .await?;
         let mut send = hubnode_conn.open_uni().await?;
-        send.write_all(&Vec::encode(&NodeInfo {
+        send.write_all(&Vec::message_pack_from(&NodeInfo {
             name: "北方酱".to_string(),
             description: "测试节点描述".to_string(),
             cert_der,
@@ -41,12 +41,9 @@ impl Node {
     }
     pub async fn get_node_info_list(&self) -> Result<Vec<NodeInfo>> {
         let (mut send, mut recv) = self.hubnode_conn.open_bi().await?;
-        send.write_all(&Vec::encode(&Packet::GetNodeInfoList)?)
+        send.write_all(&Vec::message_pack_from(&Packet::GetNodeInfoList)?)
             .await?;
         send.finish()?;
-        Ok(recv.read_to_end(usize::MAX).await?.decode()?)
-    }
-    pub fn qwdqdqw(&self) {
-        let _ = &self.endpoint;
+        Ok(recv.read_to_end(usize::MAX).await?.message_pack_to()?)
     }
 }

@@ -7,12 +7,8 @@ edition = "2021"
 tool-code = { path = "../tool-code" }
 
 anyhow = "1.0.86"                                   #错误处理
-tokio = { version = "1.39.2", features = ["full"] } #异步运行时
+tokio = { version = "1.40.0", features = ["full"] } #异步运行时
 
-quinn = "0.11.3"                                 #QUIC协议
+quinn = "0.11.5"                                 #QUIC协议
 rcgen = "0.13.1"                                 #自签名X.509证书生成
 uuid = { version = "1.10.0", features = ["v4"] } #通用唯一标识符
-hickory-resolver = "0.24.1"                      #DNS解析器
-
-ratatui = "0.28.0"     #TUI库
-tui-textarea = "0.6.1" #TUI文本框库
