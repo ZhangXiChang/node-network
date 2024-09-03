@@ -21,7 +21,6 @@ use tool_code::packet::NodeInfo;
 
 const HUBNODE_CERT_DER: &[u8] = include_bytes!("../../../assets/hubnode.cer");
 
-#[derive(Clone)]
 struct App {
     is_loop: bool,
     node: Node,

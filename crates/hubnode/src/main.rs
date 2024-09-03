@@ -1,10 +1,9 @@
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use quinn::{Connection, ConnectionError, Endpoint};
 use tool_code::{
+    ext::{quinn::Extension, rmp_serde::MessagePack},
     lock::Pointer,
     packet::{NodeInfo, Packet},
-    quinn::Extension,
-    rmp_serde::MessagePack,
 };
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
@@ -42,25 +41,39 @@ impl App {
                     async move {
                         if let Err(err) = async move {
                             let connection = incoming.accept()?.await?;
-                            let node_info = connection
-                                .accept_uni()
-                                .await?
-                                .read_to_end(usize::MAX)
-                                .await?
-                                .decode::<NodeInfo>()?;
-                            self_handle.node_list.lock().push(PeerNode {
-                                connection: connection.clone(),
-                                info: node_info,
-                            });
-                            let a = self_handle.connection_handling(connection.clone()).await;
-                            self_handle.node_list.lock().retain(|node| {
-                                node.connection.stable_id() != connection.stable_id()
-                            });
-                            a
+                            if let Err(err) = {
+                                let connection = connection.clone();
+                                async move {
+                                    let node_info = connection
+                                        .accept_uni()
+                                        .await?
+                                        .read_to_end(usize::MAX)
+                                        .await?
+                                        .decode::<NodeInfo>()?;
+                                    self_handle.node_list.lock().push(PeerNode {
+                                        connection: connection.clone(),
+                                        info: node_info,
+                                    });
+                                    self_handle.connection_handling(connection.clone()).await?;
+                                    self_handle.node_list.lock().retain(|node| {
+                                        node.connection.stable_id() != connection.stable_id()
+                                    });
+                                    anyhow::Ok(())
+                                }
+                            }
+                            .await
+                            {
+                                tracing::error!(
+                                    "[{}]连接处理错误，原因：{:?}",
+                                    connection.remote_address(),
+                                    err
+                                );
+                            }
+                            anyhow::Ok(())
                         }
                         .await
                         {
-                            panic!("{:?}", err);
+                            tracing::error!("连接传入失败，原因：{:?}", err);
                         }
                     }
                 });
@@ -84,13 +97,21 @@ impl App {
                         }
                     }
                 }
-                Err(err) => match err {
-                    ConnectionError::ApplicationClosed(closed_info) => {
-                        tracing::info!("对方连接关闭，信息: {}", closed_info);
-                        break;
+                Err(err) => {
+                    match err {
+                        ConnectionError::ApplicationClosed(close_info) => tracing::info!(
+                            "[{}]连接关闭，原因：{:?}",
+                            connection.remote_address(),
+                            close_info
+                        ),
+                        _ => tracing::warn!(
+                            "[{}]连接意外断开，原因：{:?}",
+                            connection.remote_address(),
+                            err
+                        ),
                     }
-                    _ => return Err(anyhow!("{}", err)),
-                },
+                    break;
+                }
             }
         }
         Ok(())
