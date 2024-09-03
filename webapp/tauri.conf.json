@@ -2,8 +2,8 @@
     "build": {
         "beforeDevCommand": "npm run dev",
         "beforeBuildCommand": "npm run build",
-        "devPath": "http://127.0.0.1:10279",
-        "distDir": "../dist"
+        "devPath": "http://localhost:3000",
+        "distDir": "../out"
     },
     "tauri": {
         "windows": [
@@ -20,7 +20,7 @@
         "bundle": {
             "identifier": "com.zhangxichang.node-network",
             "icon": [
-                "../assets/logo.ico"
+                "../public/logo.ico"
             ]
         },
         "allowlist": {
@@ -30,6 +30,9 @@
                 "maximize": true,
                 "close": true,
                 "unmaximize": true
+            },
+            "shell": {
+                "open": true
             }
         }
     }

@@ -19,12 +19,7 @@ async fn main() -> Result<()> {
             Ok(())
         })
         .manage(System { node: None })
-        .invoke_handler(tauri::generate_handler![system_open])
+        .invoke_handler(tauri::generate_handler![])
         .run(tauri::generate_context!())?;
     Ok(())
-}
-
-#[tauri::command]
-async fn system_open(path: String) -> Result<(), String> {
-    opener::open(path).map_err(|err| err.to_string())
 }

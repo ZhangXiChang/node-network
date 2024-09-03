@@ -16,6 +16,7 @@ tauri = { version = "1.7.2", features = [
     "window-close",
     "window-start-dragging",
     "window-unmaximize",
+    "shell-open",
 ] } #Web窗口
 window-shadows = "0.2.2" #Tauri窗口阴影，在2.0之前仍然需要
 
@@ -24,5 +25,3 @@ node = { path = "../crates/node" }
 
 anyhow = "1.0.86"                                   #错误处理
 tokio = { version = "1.40.0", features = ["full"] } #异步运行时
-
-opener = "0.7.2" #使用系统默认方式打开
