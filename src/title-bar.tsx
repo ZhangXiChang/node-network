@@ -4,10 +4,12 @@ import { createSignal } from "solid-js";
 
 export default function TitleBar() {
     const [windowToggleMaximizeIcon, setwindowToggleMaximizeIcon] = createSignal("i-mdi:window-maximize w-16px h-16px");
-    const toggleMaximize = async () => {
-        await appWindow.toggleMaximize();
-        setwindowToggleMaximizeIcon(await appWindow.isMaximized() ? "i-mdi:window-restore w-16px h-16px" : "i-mdi:window-maximize w-16px h-16px");
-    };
+    appWindow.listen("tauri://resize", async () =>
+        setwindowToggleMaximizeIcon(await appWindow.isMaximized() ?
+            "i-mdi:window-restore w-16px h-16px" :
+            "i-mdi:window-maximize w-16px h-16px",
+        ),
+    );
     return <div data-tauri-drag-region class="h-32px flex items-center">
         <div class="w-32px flex justify-center">
             <div class="rounded hover:cursor-pointer hover:bg-gray-3" onclick={() => open("https://github.com/ZhangXiChang/node-network")}>
@@ -20,7 +22,7 @@ export default function TitleBar() {
             <div class="rounded hover:cursor-pointer hover:bg-gray-3" onclick={appWindow.minimize}>
                 <div class="i-mdi:window-minimize w-16px h-16px" />
             </div>
-            <div class="rounded hover:cursor-pointer hover:bg-gray-3" onclick={toggleMaximize}>
+            <div class="rounded hover:cursor-pointer hover:bg-gray-3" onclick={appWindow.toggleMaximize}>
                 <div class={windowToggleMaximizeIcon()} />
             </div>
             <div class="rounded hover:cursor-pointer hover:bg-gray-3" onclick={appWindow.close}>
