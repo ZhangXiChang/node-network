@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react-swc";
+import solidPlugin from "vite-plugin-solid";
+import unocssPlugin from "unocss/vite";
 
 export default defineConfig({
-    plugins: [react()],
-    clearScreen: false,
+    plugins: [solidPlugin(), unocssPlugin()],
 });

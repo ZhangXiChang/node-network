@@ -1,18 +1,9 @@
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
+import TitleBar from "./title-bar";
+import Viewport from "./viewport";
 
 export default function Window() {
-    return (
-        <Box>
-            <AppBar data-tauri-drag-region="true">
-                <div></div>
-                <Toolbar>
-                </Toolbar>
-            </AppBar>
-            <Box>
-                <Toolbar />
-            </Box>
-        </Box>
-    );
+    return <div class="absolute size-full flex flex-col bg-white">
+        <TitleBar />
+        <Viewport />
+    </div>;
 }

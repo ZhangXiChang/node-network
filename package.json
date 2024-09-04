@@ -4,27 +4,22 @@
     "scripts": {
         "dev": "vite",
         "build": "tsc -b && vite build",
-        "lint": "eslint .",
         "preview": "vite preview"
     },
     "dependencies": {
-        "react": "18.3.1",
-        "react-dom": "18.3.1",
-        "@mui/material": "6.0.2",
-        "@emotion/react": "11.13.3",
-        "@emotion/styled": "11.13.0"
+        "@tauri-apps/api": "1.6.0",
+        "solid-js": "1.8.22"
     },
     "devDependencies": {
         "@eslint/js": "9.9.1",
-        "@types/react": "18.3.5",
-        "@types/react-dom": "18.3.0",
-        "@vitejs/plugin-react-swc": "3.7.0",
+        "@iconify/json": "2.2.244",
+        "@unocss/eslint-config": "0.62.3",
         "eslint": "9.9.1",
-        "eslint-plugin-react-hooks": "^5.1.0-rc.0",
-        "eslint-plugin-react-refresh": "0.4.11",
         "globals": "15.9.0",
         "typescript": "5.5.4",
         "typescript-eslint": "8.4.0",
-        "vite": "5.4.3"
+        "unocss": "0.62.3",
+        "vite": "5.4.3",
+        "vite-plugin-solid": "2.10.2"
     }
 }
