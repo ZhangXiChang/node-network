@@ -1,4 +1,4 @@
 export default function Viewport() {
-    return <div class="flex-1 flex">
+    return <div class="flex flex-1">
     </div>;
 }

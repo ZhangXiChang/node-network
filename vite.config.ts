@@ -4,4 +4,5 @@ import unocssPlugin from "unocss/vite";
 
 export default defineConfig({
     plugins: [solidPlugin(), unocssPlugin()],
+    clearScreen: false,
 });
