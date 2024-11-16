@@ -1,0 +1,30 @@
+{
+    "$schema": "https://schema.tauri.app/config/2",
+    "identifier": "zhangxichang",
+    "productName": "node-network",
+    "version": "0.1.0",
+    "build": {
+        "beforeDevCommand": "npm run dev",
+        "beforeBuildCommand": "npm run build",
+        "frontendDist": "../dist",
+        "devUrl": "http://localhost:5173"
+    },
+    "app": {
+        "windows": [
+            {
+                "label": "main",
+                "title": "节点网络",
+                "width": 1250,
+                "height": 850,
+                "decorations": false,
+                "transparent": true,
+                "center": true
+            }
+        ]
+    },
+    "bundle": {
+        "icon": [
+            "../assets/logo.ico"
+        ]
+    }
+}
