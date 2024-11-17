@@ -1,15 +1,14 @@
 import { createSignal } from "solid-js";
 import { open } from "@tauri-apps/plugin-shell";
-import { mainWindow } from "../main";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 
 export default function CenterPanel() {
-    const [windowToggleMaximizeIcon, setwindowToggleMaximizeIcon] = createSignal("i-mdi:window-maximize w-16px h-16px");
-    mainWindow.listen("tauri://resize", async () =>
-        setwindowToggleMaximizeIcon(await mainWindow.isMaximized() ?
-            "i-mdi:window-restore w-16px h-16px" :
-            "i-mdi:window-maximize w-16px h-16px",
-        ),
-    );
+    const mainWindow = getCurrentWindow();
+    const [windowToggleMaximizeIcon, setWindowToggleMaximizeIcon] = createSignal("i-mdi:window-maximize w-16px h-16px");
+    mainWindow.listen("tauri://resize", async () => setWindowToggleMaximizeIcon(await mainWindow.isMaximized() ?
+        "i-mdi:window-restore w-16px h-16px" :
+        "i-mdi:window-maximize w-16px h-16px",
+    ));
     return <div class="flex flex-1 flex-col">
         <div data-tauri-drag-region class="h-32px flex items-center">
             <div class="w-32px flex justify-center">
