@@ -1,11 +1,8 @@
-use anyhow::Result;
-
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
-#[tokio::main]
-pub async fn run() -> Result<()> {
+pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![])
-        .run(tauri::generate_context!())?;
-    Ok(())
+        .run(tauri::generate_context!())
+        .expect("应用运行错误");
 }
