@@ -40,6 +40,7 @@ impl Node {
         })
     }
     pub async fn get_node_info_list(&self) -> Result<Vec<NodeInfo>> {
+        let _ = self.endpoint.clone(); //TODO
         let (mut send, mut recv) = self.hubnode_conn.open_bi().await?;
         send.write_all(&Vec::message_pack_from(&Packet::GetNodeInfoList)?)
             .await?;

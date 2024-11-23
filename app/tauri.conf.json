@@ -1,11 +1,11 @@
 {
     "$schema": "https://schema.tauri.app/config/2",
-    "identifier": "com.zhangxichang.node-network",
     "productName": "node-network",
     "version": "0.1.0",
+    "identifier": "com.zhangxichang.node-network",
     "build": {
-        "beforeDevCommand": "npm run dev",
-        "beforeBuildCommand": "npm run build",
+        "beforeDevCommand": "pnpm dev",
+        "beforeBuildCommand": "pnpm build",
         "frontendDist": "../dist",
         "devUrl": "http://localhost:5173"
     },
