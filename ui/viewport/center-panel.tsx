@@ -34,6 +34,7 @@ export default function CenterPanel() {
                 </div>
             </div>
         </div>
-        <div class="flex-1"></div>
+        <div class="flex-1">
+        </div>
     </div>;
 }
