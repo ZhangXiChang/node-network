@@ -17,7 +17,7 @@
                 "width": 1250,
                 "height": 850,
                 "decorations": false,
-                "transparent": true,
+                "transparent": false,
                 "center": true
             }
         ]
