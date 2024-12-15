@@ -1,6 +1,6 @@
 import { render } from "solid-js/web";
 import "virtual:uno.css";
 import "./style.css";
-import Viewport from "./viewport/mod";
+import { Root } from "./root";
 
-render(() => <Viewport />, document.body);
+render(() => <Root />, document.body);
