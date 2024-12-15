@@ -8,6 +8,7 @@ use x509_parser::{
 pub trait CertDer {
     fn get_dns_name(&self) -> Result<String>;
 }
+
 impl CertDer for Vec<u8> {
     fn get_dns_name(&self) -> Result<String> {
         let (_, x509certificate) = X509Certificate::from_der(self)?;

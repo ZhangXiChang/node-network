@@ -10,6 +10,9 @@ use uuid::Uuid;
 
 #[derive(Parser)]
 struct CLIArgs {
+    ///证书名称，默认"cert"
+    #[arg(long)]
+    cert_name: Option<String>,
     ///输出目录，默认"./"
     #[arg(long)]
     out_dir: Option<String>,
@@ -27,7 +30,13 @@ fn main() -> Result<()> {
     }
     //输出到文件
     create_dir_all(out_dir.clone())?;
-    File::create(out_dir.join(".cer"))?.write_all(&cert_key.cert.der().to_vec())?;
-    File::create(out_dir.join(".key"))?.write_all(&cert_key.key_pair.serialize_der())?;
+    let mut cert_name = "cert".to_string();
+    if let Some(cli_args_cert_name) = cli_args.cert_name {
+        cert_name = cli_args_cert_name;
+    }
+    File::create(out_dir.join(cert_name.clone() + ".cer"))?
+        .write_all(&cert_key.cert.der().to_vec())?;
+    File::create(out_dir.join(cert_name.clone() + ".key"))?
+        .write_all(&cert_key.key_pair.serialize_der())?;
     Ok(())
 }

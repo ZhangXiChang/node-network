@@ -1,9 +1,9 @@
 use std::sync::{Arc, Mutex, MutexGuard};
 
-pub struct Pointer<T> {
+pub struct MLock<T> {
     value: Arc<Mutex<T>>,
 }
-impl<T> Pointer<T> {
+impl<T> MLock<T> {
     pub fn new(value: T) -> Self {
         Self {
             value: Arc::new(Mutex::new(value)),
@@ -13,7 +13,7 @@ impl<T> Pointer<T> {
         self.value.lock().unwrap()
     }
 }
-impl<T> Clone for Pointer<T> {
+impl<T> Clone for MLock<T> {
     fn clone(&self) -> Self {
         Self {
             value: self.value.clone(),
