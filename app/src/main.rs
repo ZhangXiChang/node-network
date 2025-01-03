@@ -1,5 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-fn main() {
+use anyhow::Result;
+
+fn main() -> Result<()> {
     app_::run()
 }
