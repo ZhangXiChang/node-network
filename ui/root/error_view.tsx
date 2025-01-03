@@ -1,4 +1,4 @@
-import { WindowBrow } from "../components/window";
+import { WindowBrow } from "../components/window/brow";
 
 export function ErrorView(props: { err: Error }) {
     return <>

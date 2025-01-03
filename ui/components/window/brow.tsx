@@ -22,7 +22,7 @@ export function WindowBrow(props: {
             </div>
         </Show>
         <label class="h-24px font-bold" style={{ "text-shadow": "0px 0px 10px gray" }}>{props.title && props.title}</label>
-        <div class="flex flex-1" />
+        <div class="flex flex-auto" />
         <div class="w-32px flex justify-center">
             <div class="rounded hover:cursor-pointer hover:bg-gray-3" onclick={mainWindow.minimize}>
                 <div class="i-mdi:window-minimize h-16px w-16px" />

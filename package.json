@@ -8,21 +8,21 @@
         "tauri": "tauri"
     },
     "dependencies": {
-        "@tauri-apps/api": "2.1.1",
+        "@tauri-apps/api": "2.2.0",
         "@tauri-apps/plugin-shell": "2.2.0",
         "solid-js": "1.9.3"
     },
     "devDependencies": {
-        "@tauri-apps/cli": "2.1.0",
+        "@tauri-apps/cli": "2.2.0",
         "@eslint/js": "9.17.0",
-        "@iconify/json": "2.2.282",
-        "@unocss/eslint-config": "0.65.1",
+        "@iconify/json": "2.2.291",
+        "@unocss/eslint-config": "0.65.3",
         "eslint": "9.17.0",
-        "globals": "15.13.0",
+        "globals": "15.14.0",
         "typescript": "5.7.2",
-        "typescript-eslint": "8.18.0",
-        "unocss": "0.65.1",
-        "vite": "6.0.3",
+        "typescript-eslint": "8.19.0",
+        "unocss": "0.65.3",
+        "vite": "6.0.7",
         "vite-plugin-solid": "2.11.0"
     }
 }
