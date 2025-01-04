@@ -8,7 +8,7 @@ use quinn::{
 
 use super::vecu8::certder::CertDer;
 
-pub trait QuinnExtension
+pub trait EndpointExtension
 where
     Self: Sized,
 {
@@ -17,7 +17,7 @@ where
     async fn connect_ext(&self, socket_addr: SocketAddr, cert_der: Vec<u8>) -> Result<Connecting>;
 }
 
-impl QuinnExtension for Endpoint {
+impl EndpointExtension for Endpoint {
     fn new_ext(socket_addr: SocketAddr, cert_der: Vec<u8>, key_der: Vec<u8>) -> Result<Self> {
         let mut endpoint_config = ServerConfig::with_single_cert(
             vec![cert_der.into()],

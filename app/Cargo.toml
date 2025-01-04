@@ -4,7 +4,7 @@ version = "0.0.0"
 edition = "2021"
 
 [lib]
-name = "app_"
+name = "lib_"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
@@ -17,6 +17,8 @@ serde_json = "1.0.134"
 tauri-plugin-prevent-default = "1.0.1"
 
 utils = { path = "../crates/utils" }
+protocol = { path = "../crates/protocol" }
+
 anyhow = "1.0.95"
 tokio = { version = "1.42.0", features = [
     "rt-multi-thread",

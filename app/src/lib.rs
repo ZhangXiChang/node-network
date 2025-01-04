@@ -1,6 +1,7 @@
 use anyhow::Result;
 use quinn::Endpoint;
-use utils::ext::quinn::QuinnExtension;
+use tauri::{AppHandle, Manager};
+use utils::ext::quinn::EndpointExtension;
 use uuid::Uuid;
 
 struct State {
@@ -20,11 +21,31 @@ impl State {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 #[tokio::main]
-pub async fn run() -> Result<()> {
+pub async fn main() -> Result<()> {
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_prevent_default::init())
         .manage(State::new()?)
+        .invoke_handler(tauri::generate_handler![connect])
         .run(tauri::generate_context!())?;
     Ok(())
+}
+
+#[tauri::command]
+async fn connect(app: AppHandle) -> Result<(), String> {
+    async move {
+        let connection = app
+            .state::<State>()
+            .endpoint
+            .connect_ext(
+                "127.0.0.1:10270".parse()?,
+                include_bytes!("../../target/cert1.cer").to_vec(),
+            )
+            .await?
+            .await?;
+        println!("{}", connection.remote_address());
+        anyhow::Ok(())
+    }
+    .await
+    .map_err(|err| err.to_string())
 }

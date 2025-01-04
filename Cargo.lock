@@ -117,6 +117,7 @@ version = "0.0.0"
 dependencies = [
  "anyhow",
  "parking_lot",
+ "protocol",
  "quinn",
  "rcgen",
  "serde_json",
@@ -2830,6 +2831,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "protocol"
+version = "0.1.0"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "quick-xml"
 version = "0.32.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3476,6 +3484,7 @@ dependencies = [
  "anyhow",
  "log",
  "parking_lot",
+ "protocol",
  "quinn",
  "tokio",
  "utils",
@@ -4470,6 +4479,7 @@ dependencies = [
  "flexi_logger",
  "log",
  "nu-ansi-term",
+ "protocol",
  "quinn",
  "serde",
  "x509-parser",

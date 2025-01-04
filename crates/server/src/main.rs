@@ -1,6 +1,6 @@
 use anyhow::Result;
 use quinn::Endpoint;
-use utils::{ext::quinn::QuinnExtension, logger::Logger};
+use utils::{ext::quinn::EndpointExtension, logger::Logger};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -14,6 +14,7 @@ async fn main() -> Result<()> {
         tokio::spawn(async move {
             async move {
                 let connection = incoming.accept()?.await?;
+                println!("{}", connection.remote_address());
                 anyhow::Ok(())
             }
             .await
