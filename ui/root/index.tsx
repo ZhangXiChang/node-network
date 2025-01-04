@@ -1,20 +1,24 @@
-import { ErrorBoundary } from "solid-js";
-import { WindowBrow, WindowFrame } from "../components/window";
-import { ErrorView } from "./error_view";
-import { invoke } from "@tauri-apps/api/core";
-import { AsyncError } from "../components";
+import { Checkbox } from "@ark-ui/solid";
+import { CheckIcon } from "lucide-solid";
+
+const items = [
+    { label: "React", value: "react" },
+    { label: "Solid", value: "solid" },
+    { label: "Vue", value: "vue" },
+];
 
 export function Root() {
-    const asyncError = new AsyncError();
-    return <WindowFrame>
-        <ErrorBoundary fallback={(err) => <ErrorView err={err} />}>
-            {asyncError.trigger()}
-            <WindowBrow title="节点网络" show_logo logo_link="https://github.com/ZhangXiChang/node-network" />
-            <div class="flex flex-auto flex-col">
-                <input type="text" id="name" class="flex" />
-                <input type="text" id="ipv4_addr" class="flex" />
-                <div on:click={() => invoke("connect").catch((err) => asyncError.capture(err))}><label>登录</label></div>
-            </div>
-        </ErrorBoundary>
-    </WindowFrame>;
+    return <Checkbox.Group defaultValue={["react"]} onValueChange={console.log}>
+        {items.map((item) => (
+            <Checkbox.Root value={item.value}>
+                <Checkbox.Label>{item.label}</Checkbox.Label>
+                <Checkbox.Control>
+                    <Checkbox.Indicator>
+                        <CheckIcon />
+                    </Checkbox.Indicator>
+                </Checkbox.Control>
+                <Checkbox.HiddenInput />
+            </Checkbox.Root>
+        ))}
+    </Checkbox.Group>;
 }
