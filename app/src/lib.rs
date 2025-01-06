@@ -23,8 +23,8 @@ impl State {
 #[tokio::main]
 pub async fn main() -> Result<()> {
     tauri::Builder::default()
-        .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_prevent_default::init())
+        .plugin(tauri_plugin_opener::init())
         .manage(State::new()?)
         .invoke_handler(tauri::generate_handler![connect])
         .run(tauri::generate_context!())?;
@@ -37,10 +37,7 @@ async fn connect(app: AppHandle) -> Result<(), String> {
         let connection = app
             .state::<State>()
             .endpoint
-            .connect_ext(
-                "127.0.0.1:10270".parse()?,
-                include_bytes!("../../target/cert1.cer").to_vec(),
-            )
+            .connect_ext("127.0.0.1:10270".parse()?, todo!())
             .await?
             .await?;
         println!("{}", connection.remote_address());
