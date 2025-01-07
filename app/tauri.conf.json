@@ -14,8 +14,8 @@
             {
                 "label": "main",
                 "title": "节点网络",
-                "width": 1250,
-                "height": 850,
+                "width": 360,
+                "height": 300,
                 "decorations": false,
                 "transparent": false,
                 "center": true

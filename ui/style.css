@@ -1,9 +1,1 @@
 @layer reset, base, tokens, recipes, utilities;
-
-body {
-    margin: 0px;
-}
-
-label {
-    user-select: none;
-}
