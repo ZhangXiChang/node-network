@@ -2,6 +2,7 @@
     "private": true,
     "type": "module",
     "scripts": {
+        "prepare": "panda codegen",
         "dev": "vite",
         "build": "vite build",
         "preview": "vite preview",
@@ -16,14 +17,17 @@
     "devDependencies": {
         "@eslint/js": "9.17.0",
         "@iconify/json": "2.2.292",
+        "@pandacss/dev": "0.51.1",
+        "@park-ui/panda-preset": "0.43.1",
         "@tauri-apps/cli": "2.2.2",
         "@unocss/eslint-config": "0.65.3",
         "eslint": "9.17.0",
         "globals": "15.14.0",
         "typescript": "5.7.2",
-        "typescript-eslint": "8.19.0",
+        "typescript-eslint": "8.19.1",
         "unocss": "0.65.3",
         "vite": "6.0.7",
-        "vite-plugin-solid": "2.11.0"
+        "vite-plugin-solid": "2.11.0",
+        "vite-tsconfig-paths": "5.1.4"
     }
 }
