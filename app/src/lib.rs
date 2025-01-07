@@ -25,6 +25,7 @@ pub async fn main() -> Result<()> {
     tauri::Builder::default()
         .plugin(tauri_plugin_prevent_default::init())
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_os::init())
         .manage(State::new()?)
         .invoke_handler(tauri::generate_handler![connect])
         .run(tauri::generate_context!())?;
