@@ -1,5 +1,5 @@
 use anyhow::Result;
-use quinn::Endpoint;
+use quinn::{Endpoint, VarInt};
 use tauri::{AppHandle, Manager};
 use utils::ext::quinn::EndpointExtension;
 use uuid::Uuid;
@@ -27,21 +27,29 @@ pub async fn main() -> Result<()> {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_os::init())
         .manage(State::new()?)
-        .invoke_handler(tauri::generate_handler![connect])
+        .invoke_handler(tauri::generate_handler![login])
         .run(tauri::generate_context!())?;
     Ok(())
 }
 
 #[tauri::command]
-async fn connect(app: AppHandle) -> Result<(), String> {
+async fn login(app: AppHandle, login_name: String) -> Result<(), String> {
     async move {
         let connection = app
             .state::<State>()
             .endpoint
-            .connect_ext("127.0.0.1:10270".parse()?, todo!())
+            .connect_ext(
+                "127.0.0.1:10270".parse()?,
+                include_bytes!("../../target/server.cer").to_vec(),
+            )
             .await?
             .await?;
-        println!("{}", connection.remote_address());
+        let (mut send, mut recv) = connection.open_bi().await?;
+        send.write_all(login_name.as_bytes()).await?;
+        send.finish()?;
+        let server_name = String::from_utf8(recv.read_to_end(usize::MAX).await?)?;
+        println!("{}", server_name);
+        connection.close(VarInt::from_u32(0), "主动关闭连接".as_bytes());
         anyhow::Ok(())
     }
     .await
