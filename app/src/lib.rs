@@ -1,7 +1,8 @@
 use anyhow::Result;
+use protocol::ServerDataPacket;
 use quinn::{Endpoint, VarInt};
 use tauri::{AppHandle, Manager};
-use utils::ext::quinn::EndpointExtension;
+use utils::ext::{quinn::EndpointExtension, vecu8::cbor::COBR};
 use uuid::Uuid;
 
 struct State {
@@ -45,10 +46,13 @@ async fn login(app: AppHandle, login_name: String) -> Result<(), String> {
             .await?
             .await?;
         let (mut send, mut recv) = connection.open_bi().await?;
-        send.write_all(login_name.as_bytes()).await?;
+        send.write_all(&Vec::cbor_from(
+            &ServerDataPacket::IdentityAuthentication { login_name },
+        )?)
+        .await?;
         send.finish()?;
         let server_name = String::from_utf8(recv.read_to_end(usize::MAX).await?)?;
-        println!("{}", server_name);
+        println!("[{}]连接", server_name);
         connection.close(VarInt::from_u32(0), "主动关闭连接".as_bytes());
         anyhow::Ok(())
     }

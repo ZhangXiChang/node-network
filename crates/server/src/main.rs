@@ -1,6 +1,10 @@
-use anyhow::Result;
+use anyhow::{anyhow, Result};
+use protocol::ServerDataPacket;
 use quinn::{ConnectionError, Endpoint};
-use utils::{ext::quinn::EndpointExtension, logger::Logger};
+use utils::{
+    ext::{quinn::EndpointExtension, vecu8::cbor::COBR},
+    logger::Logger,
+};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -14,16 +18,32 @@ async fn main() -> Result<()> {
         tokio::spawn(async move {
             async move {
                 let connection = incoming.accept()?.await?;
-                let (mut send, mut recv) = connection.accept_bi().await?;
-                let login_name = String::from_utf8(recv.read_to_end(usize::MAX).await?)?;
-                println!("{}", login_name);
-                send.write_all("嫦娥迹象".as_bytes()).await?;
-                send.finish()?;
-                match connection.closed().await {
-                    ConnectionError::ApplicationClosed(close_info) => {
-                        println!("{}", String::from_utf8(close_info.reason.to_vec())?)
+                loop {
+                    match connection.accept_bi().await {
+                        Ok((mut send, mut recv)) => {
+                            match recv
+                                .read_to_end(usize::MAX)
+                                .await?
+                                .cbor_to::<ServerDataPacket>()?
+                            {
+                                ServerDataPacket::IdentityAuthentication { login_name } => {
+                                    log::info!("[{}]登录", login_name);
+                                    send.write_all("嫦娥迹象".as_bytes()).await?;
+                                    send.finish()?;
+                                }
+                            }
+                        }
+                        Err(err) => match err {
+                            ConnectionError::ApplicationClosed(close_info) => {
+                                log::info!(
+                                    "连接正常关闭[{}]",
+                                    String::from_utf8(close_info.reason.to_vec())?
+                                );
+                                break;
+                            }
+                            _ => return Err(anyhow!("{}", err)),
+                        },
                     }
-                    _ => println!("连接异常关闭"),
                 }
                 anyhow::Ok(())
             }
