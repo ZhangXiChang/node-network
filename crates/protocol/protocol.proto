@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+message DataPacket {
+  bytes packet_type = 1;
+  bytes data = 2;
+
+  message PacketType {
+    message ServerCommand {
+      EnumServerCommand enum_self = 1;
+      enum EnumServerCommand {
+        LOGIN = 0;
+      }
+    }
+  }
+  message Data {
+    message LoginInfo { string login_name = 1; }
+  }
+}

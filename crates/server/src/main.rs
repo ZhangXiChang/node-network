@@ -1,8 +1,14 @@
 use anyhow::{anyhow, Result};
-use protocol::ServerDataPacket;
+use protocol::{
+    data_packet::{
+        data,
+        packet_type::{self, server_command::EnumServerCommand},
+    },
+    DataPacket,
+};
 use quinn::{ConnectionError, Endpoint};
 use utils::{
-    ext::{quinn::EndpointExtension, vecu8::cbor::COBR},
+    ext::{quinn::EndpointExtension, vecu8::protobuf::Protobuf},
     logger::Logger,
 };
 
@@ -21,13 +27,18 @@ async fn main() -> Result<()> {
                 loop {
                     match connection.accept_bi().await {
                         Ok((mut send, mut recv)) => {
-                            match recv
-                                .read_to_end(usize::MAX)
-                                .await?
-                                .cbor_to::<ServerDataPacket>()?
+                            let data_packet =
+                                recv.read_to_end(usize::MAX).await?.decode::<DataPacket>()?;
+                            match data_packet
+                                .packet_type
+                                .decode::<packet_type::ServerCommand>()?
+                                .enum_self()
                             {
-                                ServerDataPacket::IdentityAuthentication { login_name } => {
-                                    log::info!("[{}]登录", login_name);
+                                EnumServerCommand::Login => {
+                                    log::info!(
+                                        "[{}]登录",
+                                        data_packet.data.decode::<data::LoginInfo>()?.login_name
+                                    );
                                     send.write_all("嫦娥迹象".as_bytes()).await?;
                                     send.finish()?;
                                 }

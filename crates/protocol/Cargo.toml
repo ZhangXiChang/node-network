@@ -3,5 +3,8 @@ name = "protocol"
 version = "0.1.0"
 edition = "2021"
 
+[build-dependencies]
+prost-build = "0.13.4"
+
 [dependencies]
-serde = { version = "1.0.217", features = ["derive"] }
+prost = "0.13.4"
