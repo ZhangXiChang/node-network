@@ -1,15 +1,8 @@
 use anyhow::Result;
-use prost::Message;
-use protocol::{
-    data_packet::{
-        data,
-        packet_type::{self, server_command::EnumServerCommand},
-    },
-    DataPacket,
-};
+use protocol::ServerCommand;
 use quinn::{Endpoint, VarInt};
 use tauri::{AppHandle, Manager};
-use utils::ext::quinn::EndpointExtension;
+use utils::ext::{quinn::EndpointExtension, vecu8::borsh::Borsh};
 use uuid::Uuid;
 
 struct State {
@@ -53,17 +46,8 @@ async fn login(app: AppHandle, login_name: String) -> Result<(), String> {
             .await?
             .await?;
         let (mut send, mut recv) = connection.open_bi().await?;
-        send.write_all(
-            &DataPacket {
-                packet_type: packet_type::ServerCommand {
-                    enum_self: EnumServerCommand::Login.into(),
-                }
-                .encode_to_vec(),
-                data: data::LoginInfo { login_name }.encode_to_vec(),
-            }
-            .encode_to_vec(),
-        )
-        .await?;
+        send.write_all(&Vec::borsh_from(&ServerCommand::Login { login_name })?)
+            .await?;
         send.finish()?;
         let server_name = String::from_utf8(recv.read_to_end(usize::MAX).await?)?;
         println!("[{}]连接", server_name);

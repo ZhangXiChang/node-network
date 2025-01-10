@@ -3,8 +3,5 @@ name = "protocol"
 version = "0.1.0"
 edition = "2021"
 
-[build-dependencies]
-prost-build = "0.13.4"
-
 [dependencies]
-prost = "0.13.4"
+borsh = { version = "1.5.3", features = ["derive"] }

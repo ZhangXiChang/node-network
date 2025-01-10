@@ -1,1 +1,6 @@
-include!(concat!(env!("OUT_DIR"), "/_.rs"));
+use borsh::{BorshDeserialize, BorshSerialize};
+
+#[derive(BorshSerialize, BorshDeserialize)]
+pub enum ServerCommand {
+    Login { login_name: String },
+}
