@@ -4,8 +4,8 @@ import { children, createSignal, JSX } from "solid-js";
 
 export function Window(props: { children?: JSX.Element }) {
     const selfChildren = children(() => props.children);
-    const [windowToggleMaximizeIcon, setWindowToggleMaximizeIcon] = createSignal("i-mdi:window-maximize w-16px h-16px");
-    getCurrentWindow().listen("tauri://resize", async () => setWindowToggleMaximizeIcon(await getCurrentWindow().isMaximized() ?
+    const [windowMaximizeIcon, toggleWindowMaximizeIcon] = createSignal("i-mdi:window-maximize w-16px h-16px");
+    getCurrentWindow().listen("tauri://resize", async () => toggleWindowMaximizeIcon(await getCurrentWindow().isMaximized() ?
         "i-mdi:window-restore w-16px h-16px" :
         "i-mdi:window-maximize w-16px h-16px",
     ));
@@ -26,7 +26,7 @@ export function Window(props: { children?: JSX.Element }) {
                 </div>
                 <div data-tauri-drag-region class="w-32px flex justify-center">
                     <div class="rounded hover:cursor-pointer hover:bg-gray-3" onclick={getCurrentWindow().toggleMaximize}>
-                        <div class={windowToggleMaximizeIcon()} />
+                        <div class={windowMaximizeIcon()} />
                     </div>
                 </div>
                 <div data-tauri-drag-region class="w-32px flex justify-center">
