@@ -1,12 +1,19 @@
 use anyhow::Result;
+use parking_lot::Mutex;
 use protocol::ServerCommand;
-use quinn::{Endpoint, VarInt};
+use quinn::{Connection, Endpoint};
 use tauri::{AppHandle, Manager};
 use utils::ext::{quinn::EndpointExtension, vecu8::borsh::Borsh};
 use uuid::Uuid;
 
+struct Server {
+    name: String,
+    connection: Connection,
+}
+
 struct State {
     endpoint: Endpoint,
+    server: Mutex<Option<Server>>,
 }
 impl State {
     fn new() -> Result<Self> {
@@ -16,7 +23,10 @@ impl State {
             cert_key.cert.der().to_vec(),
             cert_key.key_pair.serialize_der(),
         )?;
-        Ok(Self { endpoint })
+        Ok(Self {
+            endpoint,
+            server: Default::default(),
+        })
     }
 }
 
@@ -36,22 +46,22 @@ pub async fn main() -> Result<()> {
 #[tauri::command]
 async fn login(app: AppHandle, login_name: String) -> Result<(), String> {
     async move {
-        let connection = app
+        let server_connection = app
             .state::<State>()
             .endpoint
             .connect_ext(
                 "127.0.0.1:10270".parse()?,
                 include_bytes!("../../target/server.cer").to_vec(),
-            )
-            .await?
+            )?
             .await?;
-        let (mut send, mut recv) = connection.open_bi().await?;
+        let (mut send, mut recv) = server_connection.open_bi().await?;
         send.write_all(&Vec::borsh_from(&ServerCommand::Login { login_name })?)
             .await?;
         send.finish()?;
-        let server_name = String::from_utf8(recv.read_to_end(usize::MAX).await?)?;
-        println!("[{}]连接", server_name);
-        connection.close(VarInt::from_u32(0), "主动关闭连接".as_bytes());
+        *app.state::<State>().server.lock() = Some(Server {
+            name: String::from_utf8(recv.read_to_end(usize::MAX).await?)?,
+            connection: server_connection.clone(),
+        });
         anyhow::Ok(())
     }
     .await

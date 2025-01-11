@@ -13,8 +13,7 @@ where
     Self: Sized,
 {
     fn new_ext(socket_addr: SocketAddr, cert_der: Vec<u8>, key_der: Vec<u8>) -> Result<Self>;
-    #[allow(async_fn_in_trait)] //TODO 允许公开Trait异步函数
-    async fn connect_ext(&self, socket_addr: SocketAddr, cert_der: Vec<u8>) -> Result<Connecting>;
+    fn connect_ext(&self, socket_addr: SocketAddr, cert_der: Vec<u8>) -> Result<Connecting>;
 }
 
 impl EndpointExtension for Endpoint {
@@ -30,7 +29,7 @@ impl EndpointExtension for Endpoint {
         }));
         Ok(Self::server(endpoint_config, socket_addr)?)
     }
-    async fn connect_ext(&self, socket_addr: SocketAddr, cert_der: Vec<u8>) -> Result<Connecting> {
+    fn connect_ext(&self, socket_addr: SocketAddr, cert_der: Vec<u8>) -> Result<Connecting> {
         let dns_name = cert_der.get_dns_name()?;
         Ok(self.connect_with(
             ClientConfig::with_root_certificates(Arc::new({

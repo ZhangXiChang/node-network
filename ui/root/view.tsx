@@ -16,16 +16,30 @@ export function View() {
                 <Card.Body>
                     <Field.Root>
                         <Field.Label>名称</Field.Label>
-                        <Field.Input id="login_name" autocomplete="off" placeholder="取一个喜欢的名称吧" />
+                        <Field.Input id="login_name_input" autocomplete="off" placeholder="取一个喜欢的名称吧"
+                            on:input={(e) => {
+                                const loginButton = document.getElementById("login_button");
+                                if (e.currentTarget.value.length) {
+                                    if (loginButton?.hasAttribute("disabled")) {
+                                        loginButton?.toggleAttribute("disabled");
+                                    }
+                                }
+                                else {
+                                    if (!loginButton?.hasAttribute("disabled")) {
+                                        loginButton?.toggleAttribute("disabled");
+                                    }
+                                }
+                            }}
+                        />
                     </Field.Root>
                 </Card.Body>
                 <Card.Footer gap="3">
                     <Button variant="outline" on:click={() => getCurrentWindow().close()}>退出</Button>
                     <Button
-                        on:click={() => {
-                            const loginName = (document.getElementById("login_name") as HTMLInputElement).value;
-                            if (loginName.length) invoke("login", { loginName }).catch((err) => captureError(err));
-                        }}
+                        id="login_button" disabled
+                        on:click={() => invoke("login", {
+                            loginName: (document.getElementById("login_name_input") as HTMLInputElement).value,
+                        }).catch((err) => captureError(err))}
                     >登录</Button>
                 </Card.Footer>
             </Card.Root>
