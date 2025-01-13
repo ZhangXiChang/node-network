@@ -3,7 +3,7 @@ use parking_lot::Mutex;
 use protocol::ServerCommand;
 use quinn::{Connection, Endpoint};
 use tauri::{AppHandle, Manager};
-use utils::ext::{quinn::EndpointExtension, vecu8::borsh::Borsh};
+use utils::ext::{logger_builder::LoggerBuilder, quinn::EndpointExtension, vecu8::borsh::Borsh};
 use uuid::Uuid;
 
 struct Server {
@@ -30,17 +30,26 @@ impl State {
     }
 }
 
-#[cfg_attr(mobile, tauri::mobile_entry_point)]
 #[tokio::main]
-pub async fn main() -> Result<()> {
-    tauri::Builder::default()
-        .plugin(tauri_plugin_prevent_default::init())
-        .plugin(tauri_plugin_opener::init())
-        .plugin(tauri_plugin_os::init())
-        .manage(State::new()?)
-        .invoke_handler(tauri::generate_handler![login])
-        .run(tauri::generate_context!())?;
-    Ok(())
+#[cfg_attr(mobile, tauri::mobile_entry_point)]
+pub async fn main() {
+    if let Err(err) = (|| -> Result<()> {
+        tauri::Builder::default()
+            .plugin(tauri_plugin_prevent_default::init())
+            .plugin(
+                tauri_plugin_log::Builder::builder(log::LevelFilter::Info)
+                    .log_file_dir("./log/")
+                    .build(),
+            )
+            .plugin(tauri_plugin_opener::init())
+            .plugin(tauri_plugin_os::init())
+            .manage(State::new()?)
+            .invoke_handler(tauri::generate_handler![login])
+            .run(tauri::generate_context!())?;
+        Ok(())
+    })() {
+        log::error!("{}", err);
+    }
 }
 
 #[tauri::command]

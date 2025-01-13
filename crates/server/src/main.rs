@@ -4,10 +4,7 @@ use anyhow::Result;
 use parking_lot::Mutex;
 use protocol::ServerCommand;
 use quinn::{Connection, Endpoint};
-use utils::{
-    ext::{quinn::EndpointExtension, vecu8::borsh::Borsh},
-    logger::Logger,
-};
+use utils::ext::{logger_builder::LoggerBuilder, quinn::EndpointExtension, vecu8::borsh::Borsh};
 
 struct Peernode {
     login_name: String,
@@ -16,7 +13,7 @@ struct Peernode {
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    Logger::new().start()?;
+    flexi_logger::Logger::builder(log::LevelFilter::Info).start()?;
     let server_name = Arc::new("嫦娥迹象".to_string());
     let endpoint = Endpoint::new_ext(
         "0.0.0.0:10270".parse()?,

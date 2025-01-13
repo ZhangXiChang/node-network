@@ -8,13 +8,14 @@ name = "_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
-tauri-build = { version = "2.0.4", features = [] }
+tauri-build = { version = "2.0.5", features = [] }
 
 [dependencies]
-tauri = { version = "2.2.0", features = [] }
+tauri = { version = "2.2.2", features = [] }
 serde_json = "1.0.135"
 
 tauri-plugin-prevent-default = "1.0.1"
+tauri-plugin-log = "2.2.0"
 tauri-plugin-opener = "2.2.3"
 tauri-plugin-os = "2.2.0"
 
@@ -22,12 +23,13 @@ utils = { path = "../crates/utils" }
 protocol = { path = "../crates/protocol" }
 
 anyhow = "1.0.95"
-tokio = { version = "1.42.0", features = [
+tokio = { version = "1.43.0", features = [
     "rt-multi-thread",
     "parking_lot",
     "macros",
 ] }
 parking_lot = "0.12.3"
+log = "0.4.22"
 quinn = "0.11.6"
 rcgen = "0.13.2"
-uuid = { version = "1.11.0", features = ["v4"] }
+uuid = { version = "1.11.1", features = ["v4"] }

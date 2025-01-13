@@ -4,8 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-protocol = { path = "../protocol" }
-
 anyhow = "1.0.95"
 base64 = "0.22.1"
 x509-parser = "0.16.0"
@@ -14,3 +12,4 @@ log = "0.4.22"
 flexi_logger = "0.29.8"
 nu-ansi-term = "0.50.1"
 borsh = "1.5.3"
+tauri-plugin-log = "2.2.0"

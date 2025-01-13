@@ -13,6 +13,7 @@
         "core:window:allow-close",
         "core:window:deny-internal-toggle-maximize",
         "opener:default",
-        "os:default"
+        "os:default",
+        "log:default"
     ]
 }
