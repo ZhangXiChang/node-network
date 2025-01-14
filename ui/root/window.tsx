@@ -5,7 +5,7 @@ import { children, createSignal, JSX } from "solid-js";
 export function Window(props: { children?: JSX.Element }) {
     const selfChildren = children(() => props.children);
     const [windowMaximizeIcon, toggleWindowMaximizeIcon] = createSignal("i-mdi:window-maximize w-16px h-16px");
-    getCurrentWindow().listen("tauri://resize", async () => toggleWindowMaximizeIcon(await getCurrentWindow().isMaximized() ?
+    getCurrentWindow().onResized(async () => toggleWindowMaximizeIcon(await getCurrentWindow().isMaximized() ?
         "i-mdi:window-restore w-16px h-16px" :
         "i-mdi:window-maximize w-16px h-16px",
     ));

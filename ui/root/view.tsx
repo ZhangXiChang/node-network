@@ -1,8 +1,10 @@
 import { createSignal, Match, Switch } from "solid-js";
 import { LoginUI } from "./login_ui";
+import { ChatUI } from "./chat_ui";
 
-enum ViewUIType {
-    LoginUI
+export enum ViewUIType {
+    LoginUI,
+    ChatUI
 }
 
 const [viewUIType, changeViewUI] = createSignal(ViewUIType.LoginUI);
@@ -13,6 +15,9 @@ export function View() {
         <Switch>
             <Match when={viewUIType() == ViewUIType.LoginUI}>
                 <LoginUI />
+            </Match>
+            <Match when={viewUIType() == ViewUIType.ChatUI}>
+                <ChatUI />
             </Match>
         </Switch>
     );

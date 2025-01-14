@@ -12,6 +12,8 @@
         "core:window:allow-toggle-maximize",
         "core:window:allow-close",
         "core:window:deny-internal-toggle-maximize",
+        "core:window:allow-center",
+        "core:window:allow-set-size",
         "opener:default",
         "os:default",
         "log:default"

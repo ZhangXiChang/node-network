@@ -1,9 +1,10 @@
 import { invoke } from "@tauri-apps/api/core";
-import { getCurrentWindow } from "@tauri-apps/api/window";
+import { getCurrentWindow, PhysicalSize } from "@tauri-apps/api/window";
 import { error } from "@tauri-apps/plugin-log";
 import { Button } from "~/components/button";
 import { Card } from "~/components/card";
 import { Field } from "~/components/field";
+import { changeViewUI, ViewUIType } from "./view";
 
 export function LoginUI() {
     return (
@@ -41,7 +42,9 @@ export function LoginUI() {
                             await invoke("login", {
                                 loginName: (document.getElementById("login_name_input") as HTMLInputElement).value,
                             });
-                            //TODO 登录成功，切换用户界面
+                            changeViewUI(ViewUIType.ChatUI);
+                            await getCurrentWindow().setSize(new PhysicalSize(1100, 700));
+                            getCurrentWindow().center();
                         } catch (err) {
                             error(`${err}`);
                         }
