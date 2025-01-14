@@ -17,6 +17,7 @@ struct State {
 }
 impl State {
     fn new() -> Result<Self> {
+        log::info!("开始运行");
         let cert_key = rcgen::generate_simple_self_signed(vec![Uuid::new_v4().to_string()])?;
         let endpoint = Endpoint::new_ext(
             "0.0.0.0:10271".parse()?,

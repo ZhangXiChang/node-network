@@ -1,5 +1,7 @@
 use std::path::PathBuf;
 
+use chrono::{Datelike, Local, SecondsFormat, Timelike};
+
 trait TextPaint {
     fn paint(&self, text: impl ToString) -> String;
 }
@@ -66,14 +68,32 @@ impl LoggerBuilder for tauri_plugin_log::Builder {
                 tauri_plugin_log::TargetKind::Stderr,
             ))
             .format(|format_callback, arguments, record| {
-                format_callback.finish(format_args!("[{}]:{}", record.level(), arguments))
+                format_callback.finish(format_args!(
+                    "{}",
+                    Self::fmt_str(
+                        Local::now().to_rfc3339_opts(SecondsFormat::Millis, false),
+                        record.level(),
+                        arguments,
+                    )
+                ))
             })
     }
     fn log_file_dir(self, log_file_dir: impl Into<PathBuf>) -> Self {
         self.target(tauri_plugin_log::Target::new(
             tauri_plugin_log::TargetKind::Folder {
                 path: log_file_dir.into(),
-                file_name: None,
+                file_name: Some({
+                    let now_time = Local::now();
+                    format!(
+                        "{}-{}-{}_{}-{}-{}",
+                        now_time.year(),
+                        now_time.month(),
+                        now_time.day(),
+                        now_time.hour(),
+                        now_time.minute(),
+                        now_time.second()
+                    )
+                }),
             },
         ))
     }

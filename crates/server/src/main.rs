@@ -13,7 +13,9 @@ struct Peernode {
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    flexi_logger::Logger::builder(log::LevelFilter::Info).start()?;
+    flexi_logger::Logger::builder(log::LevelFilter::Info)
+        .log_file_dir("./log/")
+        .start()?;
     let server_name = Arc::new("嫦娥迹象".to_string());
     let endpoint = Endpoint::new_ext(
         "0.0.0.0:10270".parse()?,
@@ -21,6 +23,7 @@ async fn main() -> Result<()> {
         include_bytes!("../../../target/server.key").to_vec(),
     )?;
     let onlinelist = Arc::new(Mutex::new(Vec::new() as Vec<Peernode>));
+    log::info!("开始运行");
     while let Some(incoming) = endpoint.accept().await {
         tokio::spawn({
             let onlinelist = onlinelist.clone();
@@ -36,6 +39,11 @@ async fn main() -> Result<()> {
                             .borsh_to::<ServerCommand>()?
                         {
                             ServerCommand::Login { login_name } => {
+                                log::info!(
+                                    "[{}]登录，名称[{}]",
+                                    connection.remote_address(),
+                                    login_name
+                                );
                                 onlinelist.lock().push(Peernode {
                                     login_name,
                                     connection: connection.clone(),

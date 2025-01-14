@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { error } from "@tauri-apps/plugin-log";
 import { Button } from "~/components/button";
 import { Card } from "~/components/card";
 import { Field } from "~/components/field";
@@ -42,7 +43,7 @@ export function LoginUI() {
                             });
                             //TODO 登录成功，切换用户界面
                         } catch (err) {
-                            console.error(err);
+                            error(`${err}`);
                         }
                     }}
                 >登录</Button>
