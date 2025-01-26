@@ -11,7 +11,7 @@ const [viewUIType, changeViewUI] = createSignal(ViewUIType.LoginUI);
 export { changeViewUI };
 
 export function View() {
-    return (
+    return <>
         <Switch>
             <Match when={viewUIType() == ViewUIType.LoginUI}>
                 <LoginUI />
@@ -20,5 +20,5 @@ export function View() {
                 <ChatUI />
             </Match>
         </Switch>
-    );
+    </>;
 }

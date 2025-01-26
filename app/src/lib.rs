@@ -1,39 +1,14 @@
+mod app;
+
+use std::net::SocketAddr;
+
 use anyhow::Result;
-use parking_lot::Mutex;
-use protocol::ServerCommand;
-use quinn::{Connection, Endpoint};
+use app::App;
 use tauri::{AppHandle, Manager};
-use utils::ext::{logger_builder::LoggerBuilder, quinn::EndpointExtension, vecu8::borsh::Borsh};
-use uuid::Uuid;
+use utils::ext::logger_builder::LoggerBuilder;
 
-struct Server {
-    name: String,
-    connection: Connection,
-}
-
-struct State {
-    endpoint: Endpoint,
-    server: Mutex<Option<Server>>,
-}
-impl State {
-    fn new() -> Result<Self> {
-        log::info!("开始运行");
-        let cert_key = rcgen::generate_simple_self_signed(vec![Uuid::new_v4().to_string()])?;
-        let endpoint = Endpoint::new_ext(
-            "0.0.0.0:10271".parse()?,
-            cert_key.cert.der().to_vec(),
-            cert_key.key_pair.serialize_der(),
-        )?;
-        Ok(Self {
-            endpoint,
-            server: Default::default(),
-        })
-    }
-}
-
-#[tokio::main]
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
-pub async fn main() {
+pub fn run() {
     if let Err(err) = (|| -> Result<()> {
         tauri::Builder::default()
             .plugin(tauri_plugin_prevent_default::init())
@@ -44,8 +19,12 @@ pub async fn main() {
             )
             .plugin(tauri_plugin_opener::init())
             .plugin(tauri_plugin_os::init())
-            .manage(State::new()?)
-            .invoke_handler(tauri::generate_handler![login])
+            .manage(App::new()?)
+            .invoke_handler(tauri::generate_handler![
+                connect_server,
+                login,
+                get_node_name
+            ])
             .run(tauri::generate_context!())?;
         Ok(())
     })() {
@@ -54,26 +33,28 @@ pub async fn main() {
 }
 
 #[tauri::command]
-async fn login(app: AppHandle, login_name: String) -> Result<(), String> {
-    async move {
-        let server_connection = app
-            .state::<State>()
-            .endpoint
-            .connect_ext(
-                "127.0.0.1:10270".parse()?,
-                include_bytes!("../../target/server.cer").to_vec(),
-            )?
-            .await?;
-        let (mut send, mut recv) = server_connection.open_bi().await?;
-        send.write_all(&Vec::borsh_from(&ServerCommand::Login { login_name })?)
-            .await?;
-        send.finish()?;
-        *app.state::<State>().server.lock() = Some(Server {
-            name: String::from_utf8(recv.read_to_end(usize::MAX).await?)?,
-            connection: server_connection.clone(),
-        });
-        anyhow::Ok(())
-    }
-    .await
-    .map_err(|err| err.to_string())
+async fn connect_server(tauri_app: AppHandle, socketaddr: SocketAddr) -> Result<(), String> {
+    tauri_app
+        .state::<App>()
+        .connect_server(socketaddr)
+        .await
+        .map_err(|err| err.to_string())
+}
+
+#[tauri::command]
+async fn login(tauri_app: AppHandle, login_name: String) -> Result<(), String> {
+    tauri_app
+        .state::<App>()
+        .login(login_name)
+        .await
+        .map_err(|err| err.to_string())
+}
+
+#[tauri::command]
+async fn get_node_name(tauri_app: AppHandle) -> Result<String, String> {
+    tauri_app
+        .state::<App>()
+        .get_node_name()
+        .await
+        .map_err(|err| err.to_string())
 }

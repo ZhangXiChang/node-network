@@ -9,7 +9,7 @@ export function Window(props: { children?: JSX.Element }) {
         "i-mdi:window-restore w-16px h-16px" :
         "i-mdi:window-maximize w-16px h-16px",
     ));
-    return (
+    return <>
         <div class="absolute size-full flex flex-col bg-white">
             <div data-tauri-drag-region class="h-32px flex items-center">
                 <div data-tauri-drag-region class="w-32px flex justify-center">
@@ -37,5 +37,5 @@ export function Window(props: { children?: JSX.Element }) {
             </div>
             {selfChildren()}
         </div>
-    );
+    </>;
 }

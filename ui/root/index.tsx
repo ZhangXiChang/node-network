@@ -4,7 +4,7 @@ import { Window } from "./window";
 import { type as osType } from "@tauri-apps/plugin-os";
 
 export function Root() {
-    return (
+    return <>
         <Switch>
             <Match when={osType() == "windows"}>
                 <Window>
@@ -15,5 +15,5 @@ export function Root() {
                 <View />
             </Match>
         </Switch>
-    );
+    </>;
 }

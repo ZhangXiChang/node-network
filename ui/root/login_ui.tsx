@@ -7,7 +7,18 @@ import { Field } from "~/components/field";
 import { changeViewUI, ViewUIType } from "./view";
 
 export function LoginUI() {
-    return (
+    invoke("connect_server", { socketaddr: "127.0.0.1:10270" }).catch((err) => error(`${err}`));
+    const login = async (loginName: string) => {
+        try {
+            await invoke("login", { loginName });
+            changeViewUI(ViewUIType.ChatUI);
+            await getCurrentWindow().setSize(new PhysicalSize(1100, 700));
+            getCurrentWindow().center();
+        } catch (err) {
+            error(`${err}`);
+        }
+    };
+    return <>
         <Card.Root class="flex-auto shadow-none">
             <Card.Header>
                 <Card.Title>欢迎使用</Card.Title>
@@ -19,7 +30,7 @@ export function LoginUI() {
                     <Field.Input id="login_name_input" autocomplete="off" placeholder="取一个喜欢的名称吧"
                         on:input={(e) => {
                             const loginButton = document.getElementById("login_button");
-                            if (e.currentTarget.value.length) {
+                            if ((e.target as HTMLInputElement).value.length) {
                                 if (loginButton?.hasAttribute("disabled")) {
                                     loginButton?.toggleAttribute("disabled");
                                 }
@@ -30,27 +41,22 @@ export function LoginUI() {
                                 }
                             }
                         }}
+                        on:keydown={(e) => {
+                            if (e.key == "Enter") {
+                                if (((e.target as HTMLInputElement) as HTMLInputElement).value.length) {
+                                    login((e.target as HTMLInputElement).value);
+                                }
+                            }
+                        }}
                     />
                 </Field.Root>
             </Card.Body>
             <Card.Footer gap="3">
                 <Button variant="outline" on:click={() => getCurrentWindow().close()}>退出</Button>
-                <Button
-                    id="login_button" disabled
-                    on:click={async () => {
-                        try {
-                            await invoke("login", {
-                                loginName: (document.getElementById("login_name_input") as HTMLInputElement).value,
-                            });
-                            changeViewUI(ViewUIType.ChatUI);
-                            await getCurrentWindow().setSize(new PhysicalSize(1100, 700));
-                            getCurrentWindow().center();
-                        } catch (err) {
-                            error(`${err}`);
-                        }
-                    }}
+                <Button id="login_button" disabled
+                    on:click={() => login((document.getElementById("login_name_input") as HTMLInputElement).value)}
                 >登录</Button>
             </Card.Footer>
         </Card.Root>
-    );
+    </>;
 }

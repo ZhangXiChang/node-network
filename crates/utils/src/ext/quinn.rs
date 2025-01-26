@@ -1,6 +1,6 @@
 use std::{net::SocketAddr, sync::Arc, time::Duration};
 
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use quinn::{
     rustls::{pki_types::PrivateKeyDer, RootCertStore},
     ClientConfig, Connecting, Endpoint, ServerConfig, TransportConfig,
@@ -24,13 +24,13 @@ impl EndpointExtension for Endpoint {
         )?;
         endpoint_config.transport_config(Arc::new({
             let mut a = TransportConfig::default();
-            a.keep_alive_interval(Some(Duration::from_secs(5)));
+            a.keep_alive_interval(Some(Duration::from_secs(20)));
             a
         }));
         Ok(Self::server(endpoint_config, socket_addr)?)
     }
     fn connect_ext(&self, socket_addr: SocketAddr, cert_der: Vec<u8>) -> Result<Connecting> {
-        let dns_name = cert_der.get_dns_name()?;
+        let dns_name = cert_der.get_dns_name()?.ok_or(anyhow!("没有DNS名称"))?;
         Ok(self.connect_with(
             ClientConfig::with_root_certificates(Arc::new({
                 let mut a = RootCertStore::empty();

@@ -1,5 +1,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-fn main() {
-    _lib::main()
+#[tokio::main]
+async fn main() {
+    _lib::run()
 }
