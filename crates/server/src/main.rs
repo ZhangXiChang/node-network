@@ -2,12 +2,13 @@ use std::sync::Arc;
 
 use anyhow::Result;
 use parking_lot::Mutex;
-use protocol::ServerCommand;
+use protocol::{PeernodeAction, ServerAction};
 use quinn::{Connection, Endpoint};
 use utils::ext::{logger_builder::LoggerBuilder, quinn::EndpointExtension, vecu8::borsh::Borsh};
 
+#[derive(Clone)]
 struct Peernode {
-    name: Option<String>,
+    name: Arc<Mutex<Option<String>>>,
     connection: Connection,
 }
 
@@ -32,33 +33,48 @@ async fn main() -> Result<()> {
                 let incoming_socketaddr = incoming.remote_address();
                 match async move { anyhow::Ok(incoming.accept()?.await?) }.await {
                     Ok(connection) => {
-                        let peernode = Arc::new(Mutex::new(Peernode {
-                            name: None,
+                        let peernode = Peernode {
+                            name: Default::default(),
                             connection: connection.clone(),
-                        }));
+                        };
                         peernode_list.lock().push(peernode.clone());
                         log::info!("[{}]连接", connection.remote_address());
                         log::info!("当前负载数[{}]", peernode_list.lock().len());
                         if let Err(result) = {
                             let connection = connection.clone();
                             let peernode = peernode.clone();
+                            let peernode_list = peernode_list.clone();
                             async move {
                                 loop {
                                     let (mut send, mut recv) = connection.accept_bi().await?;
                                     match recv
                                         .read_to_end(usize::MAX)
                                         .await?
-                                        .borsh_to::<ServerCommand>()?
+                                        .borsh_to::<ServerAction>()?
                                     {
-                                        ServerCommand::Login { login_name } => {
+                                        ServerAction::PeernodeLogin { login_name } => {
                                             log::info!(
-                                                "[{}]登录，名称[{}]",
+                                                "[{}]登录,名称[{}]",
                                                 connection.remote_address(),
                                                 login_name
                                             );
-                                            peernode.lock().name = Some(login_name);
-                                            send.write_all(server_name.as_bytes()).await?;
+                                            *peernode.name.lock() = Some(login_name);
+                                            send.write_all(&Vec::borsh_from(
+                                                &PeernodeAction::AcceptServerName {
+                                                    server_name: (*server_name).clone(),
+                                                },
+                                            )?)
+                                            .await?;
                                             send.finish()?;
+                                        }
+                                        ServerAction::BroadcastMessage { message: _ } => {
+                                            for peernode in &*peernode_list.lock() {
+                                                if peernode.connection.stable_id()
+                                                    != connection.stable_id()
+                                                {
+                                                    //TODO 广播消息
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -70,14 +86,14 @@ async fn main() -> Result<()> {
                         {
                             log::info!(
                                 "[{}]断开连接:{}",
-                                match &peernode.lock().name {
+                                match &*peernode.name.lock() {
                                     Some(name) => name.clone(),
                                     None => connection.remote_address().to_string(),
                                 },
                                 result
                             );
                             peernode_list.lock().retain(|peernode| {
-                                peernode.lock().connection.stable_id() != connection.stable_id()
+                                peernode.connection.stable_id() != connection.stable_id()
                             });
                             log::info!("当前负载数[{}]", peernode_list.lock().len());
                         }

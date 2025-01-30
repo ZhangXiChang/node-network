@@ -23,7 +23,8 @@ pub fn run() {
             .invoke_handler(tauri::generate_handler![
                 connect_server,
                 login,
-                get_node_name
+                get_node_name,
+                send_message
             ])
             .run(tauri::generate_context!())?;
         Ok(())
@@ -55,6 +56,15 @@ async fn get_node_name(tauri_app: AppHandle) -> Result<String, String> {
     tauri_app
         .state::<App>()
         .get_node_name()
+        .await
+        .map_err(|err| err.to_string())
+}
+
+#[tauri::command]
+async fn send_message(tauri_app: AppHandle, message: String) -> Result<(), String> {
+    tauri_app
+        .state::<App>()
+        .send_message(message)
         .await
         .map_err(|err| err.to_string())
 }

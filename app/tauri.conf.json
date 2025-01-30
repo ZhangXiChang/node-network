@@ -14,11 +14,11 @@
             {
                 "label": "main",
                 "title": "节点网络",
-                "width": 360,
-                "height": 300,
+                "width": 384,
+                "height": 320,
                 "decorations": false,
-                "transparent": false,
-                "center": true
+                "center": true,
+                "transparent": false
             }
         ]
     }

@@ -10,15 +10,14 @@ export function Window(props: { children?: JSX.Element }) {
         "i-mdi:window-maximize w-16px h-16px",
     ));
     return <>
-        <div class="absolute size-full flex flex-col bg-white">
-            <div data-tauri-drag-region class="h-32px flex items-center">
+        <div class="h-100vh w-100vw flex flex-col">
+            <div data-tauri-drag-region class="h-32px flex items-center bg-white">
                 <div data-tauri-drag-region class="w-32px flex justify-center">
                     <div class="rounded hover:cursor-pointer hover:bg-gray-3" onclick={() => openUrl("https://github.com/ZhangXiChang/node-network")}>
                         <div class="i-line-md:github-loop h-16px w-16px" />
                     </div>
                 </div>
-                <label data-tauri-drag-region class="h-24px font-bold" style={{ "text-shadow": "0px 0px 10px gray", "user-select": "none" }}>节点网络</label>
-                <div data-tauri-drag-region class="flex flex-auto" />
+                <label data-tauri-drag-region class="flex flex-1 select-none justify-center font-bold" style={{ "text-shadow": "0px 0px 10px gray" }}>节点网络</label>
                 <div data-tauri-drag-region class="w-32px flex justify-center">
                     <div class="rounded hover:cursor-pointer hover:bg-gray-3" onclick={getCurrentWindow().minimize}>
                         <div class="i-mdi:window-minimize h-16px w-16px" />
@@ -35,7 +34,7 @@ export function Window(props: { children?: JSX.Element }) {
                     </div>
                 </div>
             </div>
-            {selfChildren()}
+            <div class="h-0 flex flex-1 flex-shrink-0 p-5px">{selfChildren()}</div>
         </div>
     </>;
 }

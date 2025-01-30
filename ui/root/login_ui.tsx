@@ -19,7 +19,7 @@ export function LoginUI() {
         }
     };
     return <>
-        <Card.Root class="flex-auto shadow-none">
+        <Card.Root class="flex-1 shadow-none">
             <Card.Header>
                 <Card.Title>欢迎使用</Card.Title>
                 <Card.Description>填写个性化信息</Card.Description>
@@ -51,7 +51,7 @@ export function LoginUI() {
                     />
                 </Field.Root>
             </Card.Body>
-            <Card.Footer gap="3">
+            <Card.Footer class="gap-3">
                 <Button variant="outline" on:click={() => getCurrentWindow().close()}>退出</Button>
                 <Button id="login_button" disabled
                     on:click={() => login((document.getElementById("login_name_input") as HTMLInputElement).value)}
