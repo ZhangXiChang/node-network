@@ -46,7 +46,7 @@ async fn main() -> Result<()> {
                             let peernode_list = peernode_list.clone();
                             async move {
                                 loop {
-                                    let (mut send, mut recv) = connection.accept_bi().await?;
+                                    let (mut _send, mut recv) = connection.accept_bi().await?;
                                     match recv
                                         .read_to_end(usize::MAX)
                                         .await?
@@ -59,6 +59,7 @@ async fn main() -> Result<()> {
                                                 login_name
                                             );
                                             *peernode.name.lock() = Some(login_name);
+                                            let (mut send, _recv) = connection.open_bi().await?;
                                             send.write_all(&Vec::borsh_from(
                                                 &PeernodeAction::AcceptServerName {
                                                     server_name: (*server_name).clone(),
