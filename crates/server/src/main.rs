@@ -46,8 +46,9 @@ async fn main() -> Result<()> {
                             let peernode_list = peernode_list.clone();
                             async move {
                                 loop {
-                                    let (mut _send, mut recv) = connection.accept_bi().await?;
-                                    match recv
+                                    match connection
+                                        .accept_uni()
+                                        .await?
                                         .read_to_end(usize::MAX)
                                         .await?
                                         .borsh_to::<ServerAction>()?
@@ -59,7 +60,7 @@ async fn main() -> Result<()> {
                                                 login_name
                                             );
                                             *peernode.name.lock() = Some(login_name);
-                                            let (mut send, _recv) = connection.open_bi().await?;
+                                            let mut send = connection.open_uni().await?;
                                             send.write_all(&Vec::borsh_from(
                                                 &PeernodeAction::AcceptServerName {
                                                     server_name: (*server_name).clone(),
@@ -68,12 +69,23 @@ async fn main() -> Result<()> {
                                             .await?;
                                             send.finish()?;
                                         }
-                                        ServerAction::BroadcastMessage { message: _ } => {
-                                            for peernode in &*peernode_list.lock() {
+                                        ServerAction::BroadcastMessage { message } => {
+                                            for peernode in {
+                                                let a = peernode_list.lock().clone();
+                                                a
+                                            } {
                                                 if peernode.connection.stable_id()
                                                     != connection.stable_id()
                                                 {
-                                                    //TODO 广播消息
+                                                    let mut send =
+                                                        peernode.connection.open_uni().await?;
+                                                    send.write_all(&Vec::borsh_from(
+                                                        &PeernodeAction::AcceptMessage {
+                                                            message: message.clone(),
+                                                        },
+                                                    )?)
+                                                    .await?;
+                                                    send.finish()?;
                                                 }
                                             }
                                         }

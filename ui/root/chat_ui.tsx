@@ -1,17 +1,19 @@
 import { invoke } from "@tauri-apps/api/core";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { error } from "@tauri-apps/plugin-log";
 import { createSignal, For } from "solid-js";
 import { Alert } from "~/components/alert";
 import { Avatar } from "~/components/avatar";
 import { Field } from "~/components/field";
 
-interface Message {
+interface ChatMessage {
     nodeName: string,
     value: string
 }
 
 export function ChatUI() {
-    const [messageList, setMessageList] = createSignal([] as Message[]);
+    const [messageList, setMessageList] = createSignal([] as ChatMessage[]);
+    getCurrentWindow().listen<ChatMessage>("accept_message", async (e) => setMessageList([...messageList(), e.payload]));
     return <>
         <div class="flex flex-1 flex-col gap-5px">
             <div class="flex flex-1 flex-col gap-5px overflow-auto">
@@ -26,15 +28,17 @@ export function ChatUI() {
                 </>}</For>
             </div>
             <Field.Root>
-                <Field.Textarea class="resize-none" rows={4}
+                <Field.Textarea id="chat_text_input" class="resize-none" rows={4}
                     on:keydown={async (e) => {
                         if (e.key == "Enter" && e.ctrlKey) {
-                            if ((e.target as HTMLInputElement).value.length) {
+                            const chat_input_text = (e.target as HTMLTextAreaElement).value;
+                            if (chat_input_text.length) {
+                                (e.target as HTMLTextAreaElement).value = "";
                                 setMessageList([...messageList(), {
                                     nodeName: await invoke("get_node_name").catch((err) => error(`${err}`)) as string,
-                                    value: (e.target as HTMLInputElement).value,
+                                    value: chat_input_text,
                                 }]);
-                                (e.target as HTMLInputElement).value = "";
+                                invoke("send_message", { message: chat_input_text });
                             }
                         }
                     }}

@@ -43,7 +43,7 @@ export function LoginUI() {
                         }}
                         on:keydown={(e) => {
                             if (e.key == "Enter") {
-                                if (((e.target as HTMLInputElement) as HTMLInputElement).value.length) {
+                                if ((e.target as HTMLInputElement).value.length) {
                                     login((e.target as HTMLInputElement).value);
                                 }
                             }

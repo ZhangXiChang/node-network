@@ -17,7 +17,7 @@ export function Window(props: { children?: JSX.Element }) {
                         <div class="i-line-md:github-loop h-16px w-16px" />
                     </div>
                 </div>
-                <label data-tauri-drag-region class="flex flex-1 select-none justify-center font-bold" style={{ "text-shadow": "0px 0px 10px gray" }}>节点网络</label>
+                <label data-tauri-drag-region class="flex flex-1 select-none font-bold" style={{ "text-shadow": "0px 0px 10px gray" }}>节点网络</label>
                 <div data-tauri-drag-region class="w-32px flex justify-center">
                     <div class="rounded hover:cursor-pointer hover:bg-gray-3" onclick={getCurrentWindow().minimize}>
                         <div class="i-mdi:window-minimize h-16px w-16px" />
